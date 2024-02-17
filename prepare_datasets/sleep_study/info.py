@@ -84,7 +84,7 @@ REFERENCE_FREQ = 100 # Hz. 80% of the studies have sampling frequency of 256 HZ.
 def load_health_info(name, convert_datetime=True):
     assert type(name) == str
         
-    path = os.path.join('home', 'z5298768' 'Health_Data', name)
+    path = os.path.join('home', 'z5298768', 'Health_Data', name)
     df = pd.read_csv(path)
     
     if convert_datetime:
