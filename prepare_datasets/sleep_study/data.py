@@ -20,7 +20,7 @@ def init_study_list():
 
 def init_age_file():
     new_fn = 'age_file.csv'
-    age_path = os.path.join('home','z5298768', 'AttnSleep', 'Health_Data', ss.info.SLEEP_STUDY)
+    age_path = os.path.join('home','z5298768','Health_Data', ss.info.SLEEP_STUDY)
 
     df = pd.read_csv(age_path, sep=',', dtype='str')
     df['FILE_NAME'] = df["STUDY_PAT_ID"].str.cat(df["SLEEP_STUDY_ID"], sep='_')
