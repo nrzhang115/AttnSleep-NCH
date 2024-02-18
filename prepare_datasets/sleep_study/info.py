@@ -77,7 +77,7 @@ HEALTH_DATA_FNS = [DEMOGRAPHIC,
                    PROCEDURE_SURG_HX, 
                    PROCEDURE, 
                    SLEEP_ENC_ID, 
-                   SLEEP_STUDY]
+                   SLEEP_STUDY_NAME]
 INTERVAL = 30 # seconds.
 REFERENCE_FREQ = 100 # Hz. 80% of the studies have sampling frequency of 256 HZ.
 

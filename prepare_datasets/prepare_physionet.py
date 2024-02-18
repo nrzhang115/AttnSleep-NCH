@@ -61,9 +61,9 @@ EPOCH_SEC_SIZE = 30
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_dir", type=str, default="/home/z5298768/AttnSleep/Sleep_NCH_Samples",
+    parser.add_argument("--data_dir", type=str, default="/home/z5298768/AttnSleep_Data/Sleep_NCH_Samples",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="home/z5298768/AttnSleep/prepare_data/CZ-01",
+    parser.add_argument("--output_dir", type=str, default="home/z5298768/AttnSleep_Data/prepare_data/CZ-01",
                         help="Directory where to save numpy files outputs.")
     parser.add_argument("--select_ch", type=str, default="EEG CZ-O1",
                         help="The selected channel")
