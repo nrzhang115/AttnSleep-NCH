@@ -91,7 +91,7 @@ def main():
     print('total number of sleep study files available:', len(ss.data.study_list))
     age_groups = list(zip(range(0, 18), range(1, 19))) + [(18, 100)]
 
-    tmp = np.load('/Attnsleep-NCH/prepare_datasets/study_lists.npz', allow_pickle=True)
+    tmp = np.load('/AttnSleep-NCH/prepare_datasets/study_lists.npz', allow_pickle=True)
     study_lists = tmp["study_lists"]  # filenames that are in each age group
     num_segments = tmp["num_segments"]
     all_labels = tmp["all_labels"]
