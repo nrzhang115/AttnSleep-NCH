@@ -77,14 +77,14 @@ HEALTH_DATA_FNS = [DEMOGRAPHIC,
                    PROCEDURE_SURG_HX, 
                    PROCEDURE, 
                    SLEEP_ENC_ID, 
-                   SLEEP_STUDY_NAME]
+                   SLEEP_STUDY]
 INTERVAL = 30 # seconds.
 REFERENCE_FREQ = 100 # Hz. 80% of the studies have sampling frequency of 256 HZ.
 
 def load_health_info(name, convert_datetime=True):
     assert type(name) == str
         
-    path = os.path.join('home','z5298768','AttnSleep-NCH','prepare_datasets','Health_Data', name)
+    path = os.path.join('home','z5298768','AttnSleep_Data','Health_Data', name)
     df = pd.read_csv(path)
     
     if convert_datetime:
