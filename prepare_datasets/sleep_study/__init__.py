@@ -4,7 +4,7 @@ from . import dataset
 
 data_dir = None
 
-def init(tmp_dir='/srv/scratch/speechdata/sleep_data/NCH'):
+def init(tmp_dir='/home/z5298768/AttnSleep_Data/Sleep_NCH_Samples'):
     global data_dir
     data_dir = tmp_dir
     data.study_list = data.init_study_list()
