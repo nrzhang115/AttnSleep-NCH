@@ -63,9 +63,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/srv/scratch/speechdata/sleep_data/NCH",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="/home/z5298768/AttnSleep_Data/prepare_data/O2-M1",
+    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/F4-M1",
                         help="Directory where to save numpy files outputs.")
-    parser.add_argument("--select_ch", type=str, default="EEG O2-M1",
+    parser.add_argument("--select_ch", type=str, default="EEG F4-M1",
                         help="The selected channel")
     args = parser.parse_args()
 
@@ -91,7 +91,7 @@ def main():
     print('total number of sleep study files available:', len(ss.data.study_list))
     age_groups = list(zip(range(0, 18), range(1, 19))) + [(18, 100)]
 
-    tmp = np.load('/home/z5298768/AttnSleep_Data/prepare_data/study_lists.npz', allow_pickle=True)
+    tmp = np.load('/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/study_lists.npz', allow_pickle=True)
     study_lists = tmp["study_lists"]  # filenames that are in each age group
     num_segments = tmp["num_segments"]
     all_labels = tmp["all_labels"]
@@ -108,7 +108,7 @@ def main():
         x = np.asarray(all_features).astype(np.float32)
         y = np.asarray(all_labels).astype(np.int32)
         # Save
-        filename = '/home/z5298768/AttnSleep_Data/prepare_data/wavelet_features/' + str(
+        filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/wavelet_features/' + str(
             age_groups[i][0]) + '_' + str(age_groups[i][1]) + 'yrs_' + \
              datetime.now().isoformat(timespec='minutes') + '.npz'
 
