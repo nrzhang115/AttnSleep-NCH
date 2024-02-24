@@ -1,5 +1,5 @@
 {
-  "name": "Exp02_21",
+  "name": "Exp02_22",
   "n_gpu": 1,
 
   "arch": {
@@ -10,7 +10,7 @@
   "data_loader": {
     "args": {
       "batch_size": 128,
-      "num_folds": 2
+      "num_folds": 5
     }
   },
   "optimizer": {
