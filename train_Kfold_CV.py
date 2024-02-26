@@ -60,8 +60,7 @@ def main(config, fold_id):
 
 
     data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0],
-                                                                   folds_data[fold_id][1], 
-                                                                   folds_data[fold_id][2], batch_size)
+                                                                   folds_data[fold_id][1], batch_size)
     print()
     weights_for_each_class = calc_class_weight(data_count)
 
