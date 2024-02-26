@@ -55,10 +55,13 @@ def main(config, fold_id):
     print(folds_data[0][1])
     print('fold1:')
     print(folds_data[1][1])
+    print('fold2:')
+    print(folds_data[2][1])
 
 
     data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0],
-                                                                   folds_data[fold_id][1], batch_size)
+                                                                   folds_data[fold_id][1], 
+                                                                   folds_data[fold_id][2], batch_size)
     print()
     weights_for_each_class = calc_class_weight(data_count)
 
