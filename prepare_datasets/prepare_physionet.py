@@ -63,9 +63,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/srv/scratch/speechdata/sleep_data/NCH",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/F4-M1",
+    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/C4-M1",
                         help="Directory where to save numpy files outputs.")
-    parser.add_argument("--select_ch", type=str, default="EEG F4-M1",
+    parser.add_argument("--select_ch", type=str, default="EEG C4-M1",
                         help="The selected channel")
     args = parser.parse_args()
 
@@ -108,7 +108,7 @@ def main():
         x = np.asarray(all_features).astype(np.float32)
         y = np.asarray(all_labels).astype(np.int32)
         # Save
-        filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/wavelet_features/' + str(
+        filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/wavelet_features/C4-M1/' + str(
             age_groups[i][0]) + '_' + str(age_groups[i][1]) + 'yrs_' + \
              datetime.now().isoformat(timespec='minutes') + '.npz'
 

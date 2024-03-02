@@ -64,7 +64,7 @@ def load_study(name, preload=False, exclude=[], verbose='CRITICAL'):
 
     return raw
 
-def get_sleep_eeg_and_stages(name, channels=ss.info.EEG_CH_NAMES[0], verbose=False, downsample=True):
+def get_sleep_eeg_and_stages(name, channels=ss.info.EEG_CH_NAMES[2], verbose=False, downsample=True):
     raw = ss.data.load_study(name)
     
     freq = int(raw.info['sfreq']) # 256, 400, 512
