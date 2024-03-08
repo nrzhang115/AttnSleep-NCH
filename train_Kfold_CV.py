@@ -53,8 +53,8 @@ def main(config, fold_id):
     #print(fold_id)
     print('fold0:')
     print(folds_data[0][1])
-    print('fold1:')
-    print(folds_data[1][1])
+    #print('fold1:')
+    #print(folds_data[1][1])
     #print('fold2:')
     #print(folds_data[2][1])
    
