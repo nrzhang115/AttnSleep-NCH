@@ -1,5 +1,5 @@
 {
-  "name": "Exp_C4_M1_2",
+  "name": "Exp_C4_M1_3",
   "n_gpu": 1,
 
   "arch": {
@@ -10,7 +10,7 @@
   "data_loader": {
     "args": {
       "batch_size": 128,
-      "num_folds": 2
+      "num_folds": 1
     }
   },
   "optimizer": {
