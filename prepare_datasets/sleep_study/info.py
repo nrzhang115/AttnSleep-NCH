@@ -5,10 +5,11 @@ import sleep_study as ss
 
 EVENT_DICT = {
         'Oxygen Desaturation' : 0,
-        #'Obstructive Apnea': 1,
-        #'Hypopnea': 2,
-        #'Central Apnea': 3,
-        #'Obstructive Hypopnea' : 4,
+        'Obstructive Apnea': 1,
+        'Hypopnea': 2,
+        'Central Apnea': 3,
+        'Obstructive Hypopnea' : 4,
+        'Sleep stage R': 5,
         }
 
 FREQ_BANDS = [
