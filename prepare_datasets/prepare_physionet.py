@@ -28,20 +28,20 @@ OSH = 4
 UNKNOWN = 5
 
 stage_dict = {
-    "OD": OD,
-    "OSA": OSA,
+    "Oxygen Desaturation": OD,
+    "Obstructive Apnea": OSA,
     "Hypopnea": Hypopnea,
-    "CSA": CSA,
-    "OSH": OSH,
+    "Central Apnea": CSA,
+    "Obstructive Hypopnea": OSH,
     "UNKNOWN": UNKNOWN
 }
 
 class_dict = {
-    0: "OD",
-    1: "OSA",
+    0: "Oxygen Desaturation",
+    1: "Obstructive Apnea",
     2: "Hypopnea",
-    3: "CSA",
-    4: "OSH",
+    3: "Central Apnea",
+    4: "Obstructive Hypopnea",
     5: "UNKNOWN"
 }
 
