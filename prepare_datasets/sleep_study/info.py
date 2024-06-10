@@ -10,6 +10,10 @@ EVENT_DICT = {
         'Central Apnea': 3,
         'Obstructive Hypopnea' : 4,
         'Sleep stage R': 5,
+        'Sleep stage W': 5,
+        'Sleep stage N1': 5,
+        'Sleep stage N2': 5,
+        'Sleep stage N3': 5
         }
 
 FREQ_BANDS = [

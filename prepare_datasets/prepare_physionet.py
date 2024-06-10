@@ -51,9 +51,14 @@ ann2label = {
     "Hypopnea": 2,
     "Central Apnea": 3,
     "Obstructive Hypopnea": 4,
-    "Sleep stage R": 5
-    #"Sleep stage ?": 5,
-    #"Movement time": 5
+    "Sleep stage R": 5,
+    "Sleep stage W": 5,
+    "Sleep stage 1": 5,
+    "Sleep stage 2": 5,
+    "Sleep stage 3": 5,
+    "Sleep stage 4": 5,
+    "Sleep stage ?": 5,
+    "Movement time": 5
 }
 
 EPOCH_SEC_SIZE = 30

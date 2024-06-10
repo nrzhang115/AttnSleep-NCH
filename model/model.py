@@ -310,6 +310,7 @@ class AttnSleep(nn.Module):
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
         dropout = 0.1
+        # Change the number of classes if the number of elements in class_dict has been changed
         num_classes = 5
         afr_reduced_cnn_size = 30
 
@@ -319,7 +320,7 @@ class AttnSleep(nn.Module):
         ff = PositionwiseFeedForward(d_model, d_ff, dropout)
         self.tce = TCE(EncoderLayer(d_model, deepcopy(attn), deepcopy(ff), afr_reduced_cnn_size, dropout), N)
 
-        self.fc = nn.Linear(d_model * afr_reduced_cnn_size, num_classes)
+        self.fc = nn.Linear(d_model * afr_reduced_cnn_size, num_classes) # Final Fully-connected Layer
 
     def forward(self, x):
         x_feat = self.mrcnn(x)
