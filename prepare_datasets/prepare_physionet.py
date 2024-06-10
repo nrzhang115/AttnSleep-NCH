@@ -20,38 +20,39 @@ from mne.io import concatenate_raws, read_raw_edf
 import sleep_study as ss
 
 # Label values
-OD = 0
-OSA = 1
-Hypopnea = 2
-CSA = 3
-OSH = 4
-UNKNOWN = 5
+OD = 0,
+#OSA = 1
+#Hypopnea = 2
+#CSA = 3
+#OSH = 4
+UNKNOWN = 1
 
 stage_dict = {
     "Oxygen Desaturation": OD,
-    "Obstructive Apnea": OSA,
-    "Hypopnea": Hypopnea,
-    "Central Apnea": CSA,
-    "Obstructive Hypopnea": OSH,
+    #"Obstructive Apnea": OSA,
+    #"Hypopnea": Hypopnea,
+    #"Central Apnea": CSA,
+    #"Obstructive Hypopnea": OSH,
     "UNKNOWN": UNKNOWN
 }
 
 class_dict = {
     0: "Oxygen Desaturation",
-    1: "Obstructive Apnea",
-    2: "Hypopnea",
-    3: "Central Apnea",
-    4: "Obstructive Hypopnea",
-    5: "UNKNOWN"
+    #1: "Obstructive Apnea",
+    #2: "Hypopnea",
+    #3: "Central Apnea",
+    #4: "Obstructive Hypopnea",
+    1: "UNKNOWN"
 }
 
 ann2label = {
     "Oxygen Desaturation": 0,
-    "Obstructive Apnea": 1,
-    "Hypopnea": 2,
-    "Central Apnea": 3,
-    "Obstructive Hypopnea": 4,
-    "Mixed Apnea": 5,
+    "UNKOWN": 1
+    #"Obstructive Apnea": 1,
+    #"Hypopnea": 2,
+    #"Central Apnea": 3,
+    #"Obstructive Hypopnea": 4,
+    #"Mixed Apnea": 5,
     #"Sleep stage R": 4,
     #"Sleep stage ?": 5,
     #"Movement time": 5
