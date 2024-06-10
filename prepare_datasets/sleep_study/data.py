@@ -63,7 +63,7 @@ def load_study(name, preload=False, exclude=[], verbose='CRITICAL'):
     raw.rename_channels({name: name.upper() for name in raw.info['ch_names']})
 
     return raw
-
+# Change the line below
 def get_sleep_eeg_and_stages(name, channels=ss.info.EEG_CH_NAMES[2], verbose=False, downsample=True):
     raw = ss.data.load_study(name)
     

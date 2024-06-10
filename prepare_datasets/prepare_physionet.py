@@ -20,40 +20,41 @@ from mne.io import concatenate_raws, read_raw_edf
 import sleep_study as ss
 
 # Label values
-W = 0
-N1 = 1
-N2 = 2
-N3 = 3
-REM = 4
+OD = 0
+OSA = 1
+Hypopnea = 2
+CSA = 3
+OSH = 4
 UNKNOWN = 5
 
 stage_dict = {
-    "W": W,
-    "N1": N1,
-    "N2": N2,
-    "N3": N3,
-    "REM": REM,
+    "OD": OD,
+    "OSA": OSA,
+    "Hypopnea": Hypopnea,
+    "CSA": CSA,
+    "OSH": OSH,
     "UNKNOWN": UNKNOWN
 }
 
 class_dict = {
-    0: "W",
-    1: "N1",
-    2: "N2",
-    3: "N3",
-    4: "REM",
+    0: "OD",
+    1: "OSA",
+    2: "Hypopnea",
+    3: "CSA",
+    4: "OSH",
     5: "UNKNOWN"
 }
 
 ann2label = {
-    "Sleep stage W": 0,
-    "Sleep stage 1": 1,
-    "Sleep stage 2": 2,
-    "Sleep stage 3": 3,
-    "Sleep stage 4": 3,
-    "Sleep stage R": 4,
-    "Sleep stage ?": 5,
-    "Movement time": 5
+    "Oxygen Desaturation": 0,
+    "Obstructive Apnea": 1,
+    "Hypopnea": 2,
+    "Central Apnea": 3,
+    "Obstructive Hypopnea": 4,
+    "Mixed Apnea": 5,
+    #"Sleep stage R": 4,
+    #"Sleep stage ?": 5,
+    #"Movement time": 5
 }
 
 EPOCH_SEC_SIZE = 30
