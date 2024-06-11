@@ -311,7 +311,7 @@ class AttnSleep(nn.Module):
         h = 5  # number of attention heads
         dropout = 0.1
         # Change the number of classes if the number of elements in class_dict has been changed
-        num_classes = 6
+        num_classes = 5
         afr_reduced_cnn_size = 30
 
         self.mrcnn = MRCNN(afr_reduced_cnn_size) # use MRCNN_SHHS for SHHS dataset
