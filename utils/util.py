@@ -67,21 +67,22 @@ def calc_class_weight(labels_count):
     class_weight = dict()
     num_classes = len(labels_count)
     # Debugging information
-    print(f"Total: {total}")
-    print(f"Number of Classes: {num_classes}")
-    print(f"Labels Count: {labels_count}")
+    # print(f"Total: {total}")
+    # print(f"Number of Classes: {num_classes}")
+    # print(f"Labels Count: {labels_count}")
 
-    factor = 1 / num_classes
+    # Exclude the last class
+    factor = 1 / (num_classes - 1)
     mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
     # Debug Info
-    print(f"Mu: {mu}")
+    # print(f"Mu: {mu}")
     
-    for key in range(num_classes):
+    for key in range(num_classes - 1):
         score = math.log(mu[key] * total / float(labels_count[key]))
         class_weight[key] = score if score > 1.0 else 1.0
         class_weight[key] = round(class_weight[key] * mu[key], 2)
 
-    class_weight = [class_weight[i] for i in range(num_classes)]
+    class_weight = [class_weight[i] for i in range(num_classes - 1)]
 
     return class_weight
 
