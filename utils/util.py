@@ -73,7 +73,7 @@ def calc_class_weight(labels_count):
 
     # Exclude the last class
     factor = 1 / (num_classes)
-    mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5, factor*0.01] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
+    mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5, factor*0.1] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
     # Debug Info
     # print(f"Mu: {mu}")
     
