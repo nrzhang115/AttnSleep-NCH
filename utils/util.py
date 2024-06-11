@@ -66,6 +66,10 @@ def calc_class_weight(labels_count):
     total = np.sum(labels_count)
     class_weight = dict()
     num_classes = len(labels_count)
+    # Debugging information
+    print(f"Total: {total}")
+    print(f"Number of Classes: {num_classes}")
+    print(f"Labels Count: {labels_count}")
 
     factor = 1 / num_classes
     mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
