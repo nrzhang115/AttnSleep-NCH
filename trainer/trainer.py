@@ -93,6 +93,11 @@ class Trainer(BaseTrainer):
         """
         self.model.eval()
         self.valid_metrics.reset()
+        #######################################################
+        # Check which class was not predicted 
+        all_preds = []
+        all_targets = []
+        #######################################################
         with torch.no_grad():
             outs = np.array([])
             trgs = np.array([])
@@ -104,13 +109,22 @@ class Trainer(BaseTrainer):
                 self.valid_metrics.update('loss', loss.item())
                 for met in self.metric_ftns:
                     self.valid_metrics.update(met.__name__, met(output, target))
-
+                ##################################################   
+                # Collect predictions and targets
+                preds = torch.argmax(output, dim=1)
+                all_preds.extend(preds.cpu().numpy())
+                all_targets.extend(target.cpu().numpy())
+                ##################################################
                 preds_ = output.data.max(1, keepdim=True)[1].cpu()
 
                 outs = np.append(outs, preds_.cpu().numpy())
                 trgs = np.append(trgs, target.data.cpu().numpy())
-
-
+        ########################################################################
+        # Log prediction distribution for validation
+        print(f"Validation Prediction Distribution: {np.bincount(all_preds)}")
+        print(f"Validation Target Distribution: {np.bincount(all_targets)}")
+        ########################################################################
+        
         return self.valid_metrics.result(), outs, trgs
 
     def _progress(self, batch_idx):
