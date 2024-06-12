@@ -116,7 +116,7 @@ def main():
             print(name)
             all_features.extend(features)
             all_labels.extend(labels)
-        # Modification in line 120 and line 141    
+        # Modification in line 120 and line 141. Check if the file contains one of the features if not, skip the file   
         if len(all_features) > 0:
             x = np.asarray(all_features).astype(np.float32)
             y = np.asarray(all_labels).astype(np.int32)

@@ -63,9 +63,18 @@ def load_study(name, preload=False, exclude=[], verbose='CRITICAL'):
     raw.rename_channels({name: name.upper() for name in raw.info['ch_names']})
 
     return raw
+# Modification: To skip the file without specified event
+def contains_specified_events(annotations, event_dict):
+    return any(event in event_dict for event in annotations.description)
+# Modification ends 
+
 # Change the line below
 def get_sleep_eeg_and_stages(name, channels=ss.info.EEG_CH_NAMES[2], verbose=False, downsample=True):
     raw = ss.data.load_study(name)
+    # Modification Starts 
+    if not contains_specified_events(raw.annotations, ss.info.EVENT_DICT):
+        return np.array([]), np.array([])  # Return empty arrays if no specified events are found
+    # Modification Ends
     
     freq = int(raw.info['sfreq']) # 256, 400, 512
 
