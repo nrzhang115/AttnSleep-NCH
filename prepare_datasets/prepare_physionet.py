@@ -106,29 +106,40 @@ def main():
         all_labels = []
         for j, name in enumerate(study_lists[i]):
             features, labels = ss.data.get_demo_wavelet_features_and_labels(name)
+            
+            # Modified: Skip the file if no specified events are found
+            if len(labels) == 0:
+                print(f"No specified events found in file: {name}. Skipping this file.")
+                continue  # Skip this file if no specified events are found
+            # End of modification
+            
             print(name)
             all_features.extend(features)
             all_labels.extend(labels)
+        # Modification in line 120 and line 141    
+        if len(all_features) > 0:
+            x = np.asarray(all_features).astype(np.float32)
+            y = np.asarray(all_labels).astype(np.int32)
+            # Save
+            filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/wavelet_features/C4-M1/' + str(
+                age_groups[i][0]) + '_' + str(age_groups[i][1]) + 'yrs_' + \
+                datetime.now().isoformat(timespec='minutes') + '.npz'
 
-        x = np.asarray(all_features).astype(np.float32)
-        y = np.asarray(all_labels).astype(np.int32)
-        # Save
-        filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/wavelet_features/C4-M1/' + str(
-            age_groups[i][0]) + '_' + str(age_groups[i][1]) + 'yrs_' + \
-             datetime.now().isoformat(timespec='minutes') + '.npz'
+            save_dict = {
+                "x": x,
+                "y": y,
+                # "fs": sampling_rate,
+                "ch_label": select_ch,
+                # "header_raw": h_raw,
+                # "header_annotation": h_ann,
+            }
+            np.savez(os.path.join(args.output_dir, filename), **save_dict)
+            print('features from', age_groups[i][0], 'to', age_groups[i][1], 'y.o. pts saved in', filename)
+            print(' ')
+            print("\n=======================================\n")
+        else:
+            print(f"No features to save for age group {age_groups[i][0]}-{age_groups[i][1]} years. Skipping.")
 
-        save_dict = {
-            "x": x,
-            "y": y,
-            # "fs": sampling_rate,
-            "ch_label": select_ch,
-            # "header_raw": h_raw,
-            # "header_annotation": h_ann,
-        }
-        np.savez(os.path.join(args.output_dir, filename), **save_dict)
-        print('features from', age_groups[i][0], 'to', age_groups[i][1], 'y.o. pts saved in', filename)
-        print(' ')
-        print("\n=======================================\n")
 
 if __name__ == "__main__":
     main()
