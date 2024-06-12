@@ -77,7 +77,7 @@ def calc_class_weight(labels_count):
     #mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
     # Apporach 1 Modification Starts. 
     # Adjust the class weight to address class imbalance.
-    mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 2.5, factor * 1.7]
+    mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7]
     # Apporach 1 Modification Ends
     
     # Debug Info
