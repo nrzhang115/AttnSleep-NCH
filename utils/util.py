@@ -38,7 +38,7 @@ def load_folds_data(np_data_path, n_folds):
 
     files_dict = dict()
 
-    files_pairs = [[files[0],files[10],files[11],files[12]], [files[13],files[14],files[15],files[16]]]
+    files_pairs = [[files[0],files[10],files[11]], [files[12],files[13],files[14]]]
     file_pair = []
     '''for i in range(n_folds * 32):
         file_pair.append(files[i])
@@ -67,15 +67,15 @@ def calc_class_weight(labels_count):
     class_weight = dict()
     num_classes = len(labels_count)
     # Debugging information
-    # print(f"Total: {total}")
-    # print(f"Number of Classes: {num_classes}")
-    # print(f"Labels Count: {labels_count}")
+    print(f"Total: {total}")
+    print(f"Number of Classes: {num_classes}")
+    print(f"Labels Count: {labels_count}")
 
     # Exclude the last class
     factor = 1 / (num_classes)
-    mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5, factor*0.1] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
+    mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
     # Debug Info
-    # print(f"Mu: {mu}")
+    print(f"Mu: {mu}")
     
     for key in range(num_classes):
         score = math.log(mu[key] * total / float(labels_count[key]))
