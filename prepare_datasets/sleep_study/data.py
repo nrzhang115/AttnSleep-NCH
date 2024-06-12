@@ -150,9 +150,28 @@ def get_demo_wavelet_features(data, n=4, level=2):
 def get_demo_wavelet_features_and_labels(name):
     data, labels = get_sleep_eeg_and_stages(name)
     #features = get_demo_wavelet_features(data)
-    transposed_data = np.transpose(data, (0, 2, 1))
+    
+    # Modification Starts
+    # Check if no specified events are found
+    if len(labels) == 0:
+        print(f"No specified events found in file: {name}. Returning empty arrays.")
+        return np.array([]), np.array([])  # Return empty arrays if no specified events are found
+    
+
+    # Proceed with data processing if events are found
+    if data.size == 0:
+        print(f"Data array is empty for file: {name}. Returning empty arrays.")
+        return np.array([]), np.array([])
+
+    try:
+        transposed_data = np.transpose(data, (0, 2, 1))
+    except ValueError as e:
+        print(f"Error transposing data for file: {name}. Error: {e}")
+        return np.array([]), np.array([])
+    # Modiication Ends
     
     return transposed_data, labels
+
 
 def channel_stats(verbose=True):
     study_ch_names = {}
