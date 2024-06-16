@@ -5,11 +5,12 @@ import numpy as np
 from dateutil import parser
 from datetime import timezone
 import pywt
-from scipy import signal, interpolate
+from scipy import signal, interpolate, resample
 
 import sleep_study as ss
 
 EPOCH_SEC_SIZE = 30  # Define the epoch size in seconds
+TARGET_SAMPLING_RATE = ss.info.REFERENCE_FREQ   # The target sampling rate is defined in info.py
 study_list = None # Will be initialized after the module is initialized.
 
 def clean_ch_names(ch_names):
@@ -70,27 +71,13 @@ def load_study(name, preload=False, exclude=[], verbose='CRITICAL'):
 # Check if the file contains specified events
 def contains_specified_events(annotations, event_dict):
     return any(event in event_dict for event in annotations.description)
-
-# Pads or trims the data to the target length.
-def pad_or_trim(data, target_length):
-    
-    current_length = data.shape[0]
-    if current_length < target_length:
-        # Pad with zeros
-        pad_width = target_length - current_length
-        padded_data = np.pad(data, (0, pad_width), 'constant')
-        return padded_data
-    elif current_length > target_length:
-        # Trim the data
-        return data[:target_length]
-    else:
-        return data
-    
-# Extract Raw EEG Signals
-def get_raw_eeg_and_labels(name, data_dir, select_ch):
+ 
+# Extract Raw EEG Signals with Downsampling
+def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGET_SAMPLING_RATE):
     raw = load_study(name)
-    sampling_rate = int(raw.info['sfreq'])
-    # Convert to DataFrame without scaling time
+    current_sampling_rate = int(raw.info['sfreq'])
+    print(f"File: {name}, Original Sampling Rate: {current_sampling_rate} Hz")
+
     raw_ch_df = raw.to_data_frame(time_format=None)[select_ch]
     raw_ch_df = raw_ch_df.to_frame()
     raw_ch_df.set_index(np.arange(len(raw_ch_df)))
@@ -99,23 +86,25 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch):
     df = pd.read_csv(annotation_path, sep='\t')
     annotations = mne.Annotations(df.onset, df.duration, df.description, orig_time=raw.info['meas_date'])
     raw.set_annotations(annotations)
-    
-    # Check if the event is specified
+
     if not contains_specified_events(raw.annotations, ss.info.EVENT_DICT):
-        return np.array([]), np.array([])  # Return empty arrays if no specified events are 
-    
+        return np.array([]), np.array([])  # Return empty arrays if no specified events are found
+
     events, _ = mne.events_from_annotations(raw, event_id=ss.info.EVENT_DICT)
-    
+
     labels = []
     data = []
-    target_length = EPOCH_SEC_SIZE * sampling_rate  # Target length for each segment
-    
+    target_length = int(EPOCH_SEC_SIZE * target_sampling_rate)  # Ensure target length is integer
+
     for event in events:
         label, onset = event[[2, 0]]
-        indices = [onset, onset + target_length]
+        indices = [int(onset), int(onset + EPOCH_SEC_SIZE * current_sampling_rate)]
         if indices[1] <= len(raw_ch_df):
             interval_data = raw_ch_df.iloc[indices[0]:indices[1]].values
-            interval_data = pad_or_trim(interval_data, target_length)  # Ensure consistent length
+            # Resample the data to the target sampling rate
+            # Resampling data to aviod inhomogeneous shape issues
+            if current_sampling_rate != target_sampling_rate:
+                interval_data = resample(interval_data, target_length)
             data.append(interval_data)
             labels.append(label)
 
