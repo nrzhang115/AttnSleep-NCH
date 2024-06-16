@@ -112,12 +112,17 @@ def main():
             if len(labels) == 0:
                 print(f"No specified events found in file: {name}. Skipping this file.")
                 continue  # Skip this file if no specified events are found
-            # End of modification
             
             print(name)
-            all_data.extend(data)
-            all_labels.extend(labels)
-             
+            
+            # Check if data and labels are consistent in shape
+            if len(data) > 0 and data.shape[1:] == all_data.shape[1:]:
+                all_data.extend(data)
+                all_labels.extend(labels)
+            else:
+                print(f"Inconsistent data shape in file: {name}. Skipping this file.")
+                continue
+
         if len(all_data) > 0:
             x = np.asarray(all_data).astype(np.float32)
             y = np.asarray(all_labels).astype(np.int32)
