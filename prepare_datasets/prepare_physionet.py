@@ -68,7 +68,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/srv/scratch/speechdata/sleep_data/NCH",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/C4-M1",
+    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg/C4-M1",
                         help="Directory where to save numpy files outputs.")
     parser.add_argument("--select_ch", type=str, default="EEG C4-M1",
                         help="The selected channel")
@@ -122,9 +122,10 @@ def main():
             x = np.asarray(all_data).astype(np.float32)
             y = np.asarray(all_labels).astype(np.int32)
             # Save
-            filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/wavelet_features/C4-M1/' + str(
-                age_groups[i][0]) + '_' + str(age_groups[i][1]) + 'yrs_' + \
-                datetime.now().isoformat(timespec='minutes') + '.npz'
+            # filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg/C4-M1/' + str(
+            #     age_groups[i][0]) + '_' + str(age_groups[i][1]) + 'yrs_' + \
+            #     datetime.now().isoformat(timespec='minutes') + '.npz'
+            filename = os.path.join(args.output_dir, f'{age_groups[i][0]}_{age_groups[i][1]}yrs_{datetime.now().isoformat(timespec="minutes")}.npz')
 
             save_dict = {
                 "x": x,
@@ -134,7 +135,7 @@ def main():
                 # "header_raw": h_raw,
                 # "header_annotation": h_ann,
             }
-            np.savez(os.path.join(args.output_dir, filename), **save_dict)
+            np.savez(filename, **save_dict)
             print('features from', age_groups[i][0], 'to', age_groups[i][1], 'y.o. pts saved in', filename)
             print(' ')
             print("\n=======================================\n")
