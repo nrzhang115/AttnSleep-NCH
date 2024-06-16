@@ -180,8 +180,9 @@ def contains_specified_events(annotations, event_dict):
 # Extract Raw EEG Signals
 def get_raw_eeg_and_labels(name, data_dir, select_ch):
     raw = load_study(name)
-    sampling_rate = raw.info['sfreq']
-    raw_ch_df = raw.to_data_frame(scaling_time=100.0)[select_ch]
+    sampling_rate = int(raw.info['sfreq'])
+    # Convert to DataFrame without scaling time
+    raw_ch_df = raw.to_data_frame(time_format=None)[select_ch]
     raw_ch_df = raw_ch_df.to_frame()
     raw_ch_df.set_index(np.arange(len(raw_ch_df)))
 
@@ -200,7 +201,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch):
     data = []
     for event in events:
         label, onset = event[[2, 0]]
-        indices = [onset, onset + EPOCH_SEC_SIZE * sampling_rate]
+        indices = [int(onset), int(onset + EPOCH_SEC_SIZE * sampling_rate)]
         if indices[1] <= len(raw_ch_df):
             interval_data = raw_ch_df.iloc[indices[0]:indices[1]].values
             data.append(interval_data)
