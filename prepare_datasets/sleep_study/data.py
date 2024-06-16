@@ -71,112 +71,21 @@ def load_study(name, preload=False, exclude=[], verbose='CRITICAL'):
 def contains_specified_events(annotations, event_dict):
     return any(event in event_dict for event in annotations.description)
 
-
-# Change the line below
-# def get_sleep_eeg_and_stages(name, channels=ss.info.EEG_CH_NAMES[2], verbose=False, downsample=True):
-#     raw = ss.data.load_study(name)
-#     # Modification Starts 
-#     if not contains_specified_events(raw.annotations, ss.info.EVENT_DICT):
-#         return np.array([]), np.array([])  # Return empty arrays if no specified events are found
-#     # Modification Ends
+# Pads or trims the data to the target length.
+def pad_or_trim(data, target_length):
     
-#     freq = int(raw.info['sfreq']) # 256, 400, 512
-
-#     n_samples = raw.n_times
+    current_length = data.shape[0]
+    if current_length < target_length:
+        # Pad with zeros
+        pad_width = target_length - current_length
+        padded_data = np.pad(data, (0, pad_width), 'constant')
+        return padded_data
+    elif current_length > target_length:
+        # Trim the data
+        return data[:target_length]
+    else:
+        return data
     
-#     if verbose:
-#         print('sampling rate:', freq, 'Hz')
-#         print('channel names:', raw.info['ch_names'])
-#         print( )
-#         sleep_stage_stats = ss.data.sleep_stage_stats([study])
-#         print( )
-    
-#     events, event_id = mne.events_from_annotations(raw, event_id = ss.info.EVENT_DICT, verbose=verbose)
-    
-#     labels = []
-#     data = []
-    
-#     for event in events:
-#         label, onset = event[[2, 0]]
-        
-#         # get 30 seconds of data corresponding to the label
-#         indices = [onset, onset + ss.info.INTERVAL*freq]
-        
-#         if indices[1] <= n_samples:
-#             interval_data = raw.get_data(channels, start=indices[0], stop=indices[1])
-#             data.append(interval_data) 
-#             labels.append(label)
-#             # sometimes the last interval seems to go over the length of the data and cause problems.
-#             # it's probably okay to just skip those for now.
-   
-#     labels = np.array(labels)
-#     data = np.array(data)
-        
-#     # Downsample to 100Hz
-#     if downsample:
-#         if freq % ss.info.REFERENCE_FREQ == 0:
-#             k = freq//ss.info.REFERENCE_FREQ
-#             data = data[:,:,::k]
-
-#         elif freq != ss.info.REFERENCE_FREQ:
-#             x = np.linspace(0, ss.info.INTERVAL, num=ss.info.INTERVAL*freq)
-#             new_x = np.linspace(0, ss.info.INTERVAL, num=ss.info.INTERVAL*ss.info.REFERENCE_FREQ)
-
-#             f = interpolate.interp1d(x, data, kind='linear', axis= -1, assume_sorted=True)
-#             data = f(new_x)   
-
-#     # data is (num events) by (num channels) by (30s x ss.info.REFERENCE_FREQ)            
-#     return np.array(data), labels
-
-# def get_demo_wavelet_features(data, n=4, level=2):
-    
-#     def get_stats(x, axis=-1):
-#         stats = []
-#         stats.extend(np.expand_dims(np.mean(x, axis), 0))
-#         stats.extend(np.expand_dims(np.std(x, axis), 0))
-#         stats.extend(np.expand_dims(np.min(x, axis),0))
-#         stats.extend(np.expand_dims(np.max(x, axis),0))
-
-#         return np.array(stats)   
-    
-#     coeffs = pywt.wavedec(data, 'db%d' % n, level=level, axis=-1)
-
-#     # coeffs is a list of length (level+1)
-#     # coeffs[i] is an array of size (data.shape[0] == num events) by (data.shape[1] == num channels) by (-1)
-#     res = []
-
-#     for i in range(len(coeffs)):
-#         stats = get_stats(coeffs[i]) # this has (num stats) by (num events) by (num channels)
-#         res.extend(stats)    
-
-#     return np.array(res).transpose((1, 2, 0))
-
-# def get_demo_wavelet_features_and_labels(name):
-#     data, labels = get_sleep_eeg_and_stages(name)
-#     #features = get_demo_wavelet_features(data)
-    
-#     # Modification Starts
-#     # Check if no specified events are found
-#     if len(labels) == 0:
-#         print(f"No specified events found in file: {name}. Returning empty arrays.")
-#         return np.array([]), np.array([])  # Return empty arrays if no specified events are found
-    
-
-#     # Proceed with data processing if events are found
-#     if data.size == 0:
-#         print(f"Data array is empty for file: {name}. Returning empty arrays.")
-#         return np.array([]), np.array([])
-
-#     try:
-#         transposed_data = np.transpose(data, (0, 2, 1))
-#     except ValueError as e:
-#         print(f"Error transposing data for file: {name}. Error: {e}")
-#         return np.array([]), np.array([])
-#     # Modiication Ends
-    
-#     return transposed_data, labels
-
-##############################################################################
 # Extract Raw EEG Signals
 def get_raw_eeg_and_labels(name, data_dir, select_ch):
     raw = load_study(name)
@@ -199,11 +108,14 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch):
     
     labels = []
     data = []
+    target_length = EPOCH_SEC_SIZE * ampling_rate  # Target length for each segment
+    
     for event in events:
         label, onset = event[[2, 0]]
-        indices = [onset, onset + EPOCH_SEC_SIZE * sampling_rate]
+        indices = [onset, onset + target_length]
         if indices[1] <= len(raw_ch_df):
             interval_data = raw_ch_df.iloc[indices[0]:indices[1]].values
+            interval_data = pad_or_trim(interval_data, target_length)  # Ensure consistent length
             data.append(interval_data)
             labels.append(label)
 
