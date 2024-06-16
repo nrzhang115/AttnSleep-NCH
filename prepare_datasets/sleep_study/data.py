@@ -201,7 +201,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch):
     data = []
     for event in events:
         label, onset = event[[2, 0]]
-        indices = [int(onset), int(onset + EPOCH_SEC_SIZE * sampling_rate)]
+        indices = [onset, onset + EPOCH_SEC_SIZE * sampling_rate]
         if indices[1] <= len(raw_ch_df):
             interval_data = raw_ch_df.iloc[indices[0]:indices[1]].values
             data.append(interval_data)

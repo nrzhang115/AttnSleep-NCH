@@ -114,14 +114,19 @@ def main():
                 continue  # Skip this file if no specified events are found
             
             print(name)
+            all_data.extend(data)
+            all_labels.extend(labels)
+            # # Log the shape of each data segment
+            # print(f"Data shape in file {name}: {data.shape if len(data) > 0 else 'Empty'}")
             
-            # Check if data and labels are consistent in shape
-            if len(data) > 0:
-                if all_data and data[0].shape != all_data[0].shape:
-                    print(f"Inconsistent data shape in file: {name}. Expected {all_data[0].shape}, got {data[0].shape}. Skipping this file.")
-                    continue
-                all_data.extend(data)
-                all_labels.extend(labels)
+            # if len(data) > 0:
+            #     if expected_shape is None:
+            #         expected_shape = data[0].shape
+            #     if data[0].shape != expected_shape:
+            #         print(f"Inconsistent data shape in file: {name}. Expected {expected_shape}, got {data[0].shape}. Skipping this file.")
+            #         continue
+            #     all_data.extend(data)
+            #     all_labels.extend(labels)
 
         if len(all_data) > 0:
             x = np.asarray(all_data).astype(np.float32)
