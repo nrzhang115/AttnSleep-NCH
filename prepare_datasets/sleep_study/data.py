@@ -108,7 +108,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch):
     
     labels = []
     data = []
-    target_length = EPOCH_SEC_SIZE * ampling_rate  # Target length for each segment
+    target_length = EPOCH_SEC_SIZE * sampling_rate  # Target length for each segment
     
     for event in events:
         label, onset = event[[2, 0]]
