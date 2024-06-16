@@ -101,11 +101,12 @@ def main():
     num_segments = tmp["num_segments"]
     all_labels = tmp["all_labels"]
 
+    # Change the code below according to the changes made in data.py regarding get_raw_eeg_and_labels
     for i, study_list in enumerate(study_lists):
-        all_features = []
+        all_data = []
         all_labels = []
         for j, name in enumerate(study_lists[i]):
-            features, labels = ss.data.get_demo_wavelet_features_and_labels(name)
+            data, labels = ss.data.get_raw_eeg_and_labels(name, args.data_dir, select_ch)
             
             # Modified: Skip the file if no specified events are found
             if len(labels) == 0:
@@ -114,11 +115,11 @@ def main():
             # End of modification
             
             print(name)
-            all_features.extend(features)
+            all_data.extend(data)
             all_labels.extend(labels)
-        # Modification in line 120 and line 141. Check if the file contains one of the features if not, skip the file   
-        if len(all_features) > 0:
-            x = np.asarray(all_features).astype(np.float32)
+             
+        if len(all_data) > 0:
+            x = np.asarray(all_data).astype(np.float32)
             y = np.asarray(all_labels).astype(np.int32)
             # Save
             filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/wavelet_features/C4-M1/' + str(
