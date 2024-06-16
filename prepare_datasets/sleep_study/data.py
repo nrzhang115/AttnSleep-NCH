@@ -182,7 +182,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch):
     raw = load_study(name)
     sampling_rate = int(raw.info['sfreq'])
     # Convert to DataFrame without scaling time
-    raw_ch_df = raw.to_data_frame(scaling_time=100.0)[select_ch]
+    raw_ch_df = raw.to_data_frame(time_format=None)[select_ch]
     raw_ch_df = raw_ch_df.to_frame()
     raw_ch_df.set_index(np.arange(len(raw_ch_df)))
 
