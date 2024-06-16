@@ -5,7 +5,8 @@ import numpy as np
 from dateutil import parser
 from datetime import timezone
 import pywt
-from scipy import signal, interpolate, resample
+from scipy import signal, interpolate
+from scipy.signal import resample
 
 import sleep_study as ss
 
