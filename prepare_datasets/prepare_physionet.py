@@ -116,12 +116,12 @@ def main():
             print(name)
             
             # Check if data and labels are consistent in shape
-            if len(data) > 0 and data.shape[1:] == all_data.shape[1:]:
+            if len(data) > 0:
+                if all_data and data[0].shape != all_data[0].shape:
+                    print(f"Inconsistent data shape in file: {name}. Expected {all_data[0].shape}, got {data[0].shape}. Skipping this file.")
+                    continue
                 all_data.extend(data)
                 all_labels.extend(labels)
-            else:
-                print(f"Inconsistent data shape in file: {name}. Skipping this file.")
-                continue
 
         if len(all_data) > 0:
             x = np.asarray(all_data).astype(np.float32)
