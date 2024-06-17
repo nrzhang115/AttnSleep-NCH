@@ -342,7 +342,7 @@ class AttnSleep(nn.Module):
         num_classes = 5
         afr_reduced_cnn_size = 128 # Original one = 30
 
-        self.mrcnn = MRCNN(afr_reduced_cnn_size) # use MRCNN_SHHS for SHHS dataset
+        self.mrcnn = MRCNN(afr_reduced_cnn_size, d_model) # use MRCNN_SHHS for SHHS dataset
 
         attn = MultiHeadedAttention(h, d_model, afr_reduced_cnn_size)
         ff = PositionwiseFeedForward(d_model, d_ff, dropout)
