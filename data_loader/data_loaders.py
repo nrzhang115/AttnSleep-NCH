@@ -26,7 +26,10 @@ class LoadDataset_from_numpy(Dataset):
                 self.x_data = self.x_data.permute(0, 2, 1)
         else:
             self.x_data = self.x_data.unsqueeze(1)
-
+        ###################################################################################
+        # Verify data shapes
+        print(f"Loaded data shape: {self.x_data.shape}, Labels shape: {self.y_data.shape}")
+        ###################################################################################
     def __getitem__(self, index):
         return self.x_data[index], self.y_data[index]
 
