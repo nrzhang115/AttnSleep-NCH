@@ -211,9 +211,9 @@ class MultiHeadedAttention(nn.Module):
         if total_elements != expected_elements:
             raise ValueError(f"Total elements ({total_elements}) do not match expected elements ({expected_elements})")
         
-        query = query.view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
-        key   = self.convs[1](key).view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
-        value = self.convs[2](value).view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+        query = query.view(nbatches, self.h, -1, seq_len).transpose(1, 2).to(query.device)
+        key   = self.convs[1](key).view(nbatches, self.h, -1, seq_len).transpose(1, 2).to(query.device)
+        value = self.convs[2](value).view(nbatches, self.h, -1, seq_len).transpose(1, 2).to(query.device)
 
         # Debug Check After View
         print(f"Query shape after view: {query.shape}")
