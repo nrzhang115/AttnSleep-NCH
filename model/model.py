@@ -197,38 +197,17 @@ class MultiHeadedAttention(nn.Module):
     def forward(self, query, key, value):
         "Implements Multi-head attention"
         nbatches = query.size(0)
-        seq_len = query.size(2)  # Sequence length (number of time steps)
-        # Debug Check
-        print(f"Query shape before view: {query.shape}")
-        print(f"Key shape before view: {key.shape}")
-        print(f"Value shape before view: {value.shape}")
-        
-        # Check if the total number of elements match
-        total_elements = query.numel()
-        expected_elements = nbatches * seq_len * self.h * self.d_k
-        print(f"Total elements: {total_elements}, Expected elements: {expected_elements}")
 
-        if total_elements != expected_elements:
-            raise ValueError(f"Total elements ({total_elements}) do not match expected elements ({expected_elements})")
-        
-        query = query.view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
-        key   = self.convs[1](key).view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
-        value = self.convs[2](value).view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+        query = query.view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
+        key   = self.convs[1](key).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
+        value = self.convs[2](value).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
 
-        # Debug Check After View
-        print(f"Query shape after view: {query.shape}")
-        print(f"Key shape after view: {key.shape}")
-        print(f"Value shape after view: {value.shape}")
-        
         x, self.attn = attention(query, key, value, dropout=self.dropout)
-        
-        # Reshaping back to the original format
+
         x = x.transpose(1, 2).contiguous() \
-            .view(nbatches, self.d_k * self.h, seq_len)
-            
-        print(f"MultiHeadedAttention output shape: {x.shape}")
+            .view(nbatches, -1, self.h * self.d_k)
+
         return self.linear(x)
-        
 
 
 class LayerNorm(nn.Module):
@@ -241,16 +220,9 @@ class LayerNorm(nn.Module):
         self.eps = eps
 
     def forward(self, x):
-        print(f"LayerNorm input: {x.shape}")
-        device = x.device
-        if self.a_2.size(0) != x.size(-1):
-            self.a_2 = nn.Parameter(torch.ones(x.size(-1)).to(device))
-            self.b_2 = nn.Parameter(torch.zeros(x.size(-1)).to(device))
         mean = x.mean(-1, keepdim=True)
         std = x.std(-1, keepdim=True)
-        normalized_x = self.a_2 * (x - mean) / (std + self.eps) + self.b_2
-        print(f"LayerNorm output: {normalized_x.shape}")
-        return normalized_x
+        return self.a_2 * (x - mean) / (std + self.eps) + self.b_2
 
 
 class SublayerOutput(nn.Module):
@@ -265,19 +237,7 @@ class SublayerOutput(nn.Module):
 
     def forward(self, x, sublayer):
         "Apply residual connection to any sublayer with the same size."
-        print(f"Sublayer input: {x.shape}")
-        norm_x = self.norm(x)
-        sublayer_x = sublayer(norm_x)
-        print(f"Sublayer after norm: {norm_x.shape}")
-        print(f"Sublayer output before residual: {sublayer_x.shape}")
-        
-        # check if the shapes of norm_x and sublayer_x are the same.
-        assert norm_x.shape == sublayer_x.shape, f"Shape mismatch: norm_x {norm_x.shape}, sublayer_x {sublayer_x.shape}"
-        
-        result = x + self.dropout(sublayer_x)
-        print(f"Sublayer output: {result.shape}")
-        return result
-        #return x + self.dropout(sublayer(self.norm(x)))
+        return x + self.dropout(sublayer(self.norm(x)))
 
 
 def clones(module, N):
@@ -298,10 +258,8 @@ class TCE(nn.Module):
         self.norm = LayerNorm(layer.size)
 
     def forward(self, x):
-        for i, layer in enumerate(self.layers):
-            print(f"Before layer {i}: {x.shape}")
+        for layer in self.layers:
             x = layer(x)
-            print(f"After layer {i}: {x.shape}")
         return self.norm(x)
 
 
@@ -323,14 +281,9 @@ class EncoderLayer(nn.Module):
 
     def forward(self, x_in):
         "Transformer Encoder"
-        print(f"Input to EncoderLayer: {x_in.shape}")
         query = self.conv(x_in)
-        print(f"After conv: {query.shape}")
         x = self.sublayer_output[0](query, lambda x: self.self_attn(query, x_in, x_in))  # Encoder self-attention
-        print(f"After self-attn: {x.shape}")
-        x = self.sublayer_output[1](x, self.feed_forward)
-        print(f"After feed_forward: {x.shape}")
-        return x
+        return self.sublayer_output[1](x, self.feed_forward)
 
 
 class PositionwiseFeedForward(nn.Module):
@@ -353,12 +306,10 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        # Original d_model = 80
-        d_model = 30  # set to be 100 for SHHS dataset
+        d_model = 80  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
         dropout = 0.1
-        # Change the number of classes if the number of elements in class_dict has been changed
         num_classes = 5
         afr_reduced_cnn_size = 30
 
@@ -368,18 +319,13 @@ class AttnSleep(nn.Module):
         ff = PositionwiseFeedForward(d_model, d_ff, dropout)
         self.tce = TCE(EncoderLayer(d_model, deepcopy(attn), deepcopy(ff), afr_reduced_cnn_size, dropout), N)
 
-        self.fc = nn.Linear(d_model * afr_reduced_cnn_size, num_classes) # Final Fully-connected Layer
+        self.fc = nn.Linear(d_model * afr_reduced_cnn_size, num_classes)
 
     def forward(self, x):
-        print(f"Input shape: {x.shape}")
         x_feat = self.mrcnn(x)
-        print(f"After MRCNN: {x_feat.shape}")
         encoded_features = self.tce(x_feat)
-        print(f"After TCE: {encoded_features.shape}")
         encoded_features = encoded_features.contiguous().view(encoded_features.shape[0], -1)
-        print(f"After reshaping: {encoded_features.shape}")
         final_output = self.fc(encoded_features)
-        print(f"Final output shape: {final_output.shape}")
         return final_output
 
 ######################################################################
@@ -451,5 +397,4 @@ class MRCNN_SHHS(nn.Module):
         x_concat = torch.cat((x1, x2), dim=2)
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
-
         return x_concat
