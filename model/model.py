@@ -259,7 +259,9 @@ class TCE(nn.Module):
 
     def forward(self, x):
         for layer in self.layers:
+            print(f"Before layer {i}: {x.shape}")
             x = layer(x)
+            print(f"After layer {i}: {x.shape}")
         return self.norm(x)
 
 
@@ -281,9 +283,14 @@ class EncoderLayer(nn.Module):
 
     def forward(self, x_in):
         "Transformer Encoder"
+        print(f"Input to EncoderLayer: {x_in.shape}")
         query = self.conv(x_in)
+        print(f"After conv: {query.shape}")
         x = self.sublayer_output[0](query, lambda x: self.self_attn(query, x_in, x_in))  # Encoder self-attention
-        return self.sublayer_output[1](x, self.feed_forward)
+        print(f"After self-attn: {x.shape}")
+        x = self.sublayer_output[1](x, self.feed_forward)
+        print(f"After feed_forward: {x.shape}")
+        return x
 
 
 class PositionwiseFeedForward(nn.Module):
