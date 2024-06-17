@@ -197,13 +197,29 @@ class MultiHeadedAttention(nn.Module):
     def forward(self, query, key, value):
         "Implements Multi-head attention"
         nbatches = query.size(0)
+        seq_len = query.size(2)  # Sequence length (number of time steps)
+        # Debug Check
+        print(f"Query shape before view: {query.shape}")
+        print(f"Key shape before view: {key.shape}")
+        print(f"Value shape before view: {value.shape}")
         
-        query = query.view(nbatches, -1, self.h, self.d_k).transpose(1, 2).to(query.device)
-        key   = self.convs[1](key).view(nbatches, -1, self.h, self.d_k).transpose(1, 2).to(query.device)
-        value = self.convs[2](value).view(nbatches, -1, self.h, self.d_k).transpose(1, 2).to(query.device)
-
+        try:
+            query = query.view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+            key   = self.convs[1](key).view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+            value = self.convs[2](value).view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+        except RuntimeError as e:
+            print(f"Error in reshaping: {e}")
+            print(f"query.size: {query.size()}, self.h: {self.h}, self.d_k: {self.d_k}, seq_len: {seq_len}")
+            raise e
+    
+        # Debug Check After View
+        print(f"Query shape after view: {query.shape}")
+        print(f"Key shape after view: {key.shape}")
+        print(f"Value shape after view: {value.shape}")
+        
         x, self.attn = attention(query, key, value, dropout=self.dropout)
-
+        
+        # Reshaping back to the original format
         x = x.transpose(1, 2).contiguous() \
             .view(nbatches, -1, self.h * self.d_k)
 
