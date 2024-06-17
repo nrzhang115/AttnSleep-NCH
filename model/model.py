@@ -81,7 +81,8 @@ class MRCNN(nn.Module):
             nn.Conv1d(1, 64, kernel_size=50, stride=6, bias=False, padding=24),
             nn.BatchNorm1d(64),
             self.GELU,
-            nn.MaxPool1d(kernel_size=8, stride=2, padding=4),
+            # nn.MaxPool1d(kernel_size=8, stride=2, padding=4),
+            nn.MaxPool1d(kernel_size=8, stride=4, padding=2),
             nn.Dropout(drate),
 
             nn.Conv1d(64, 128, kernel_size=8, stride=1, bias=False, padding=4),
@@ -92,14 +93,16 @@ class MRCNN(nn.Module):
             nn.BatchNorm1d(128),
             self.GELU,
 
-            nn.MaxPool1d(kernel_size=4, stride=4, padding=2)
+            #nn.MaxPool1d(kernel_size=4, stride=4, padding=2)
+            nn.MaxPool1d(kernel_size=4, stride=4, padding=0)
         )
 
         self.features2 = nn.Sequential(
             nn.Conv1d(1, 64, kernel_size=400, stride=50, bias=False, padding=200),
             nn.BatchNorm1d(64),
             self.GELU,
-            nn.MaxPool1d(kernel_size=4, stride=2, padding=2),
+            # nn.MaxPool1d(kernel_size=4, stride=2, padding=2),
+            nn.MaxPool1d(kernel_size=4, stride=2, padding=1),
             nn.Dropout(drate),
 
             nn.Conv1d(64, 128, kernel_size=7, stride=1, bias=False, padding=3),
@@ -110,7 +113,8 @@ class MRCNN(nn.Module):
             nn.BatchNorm1d(128),
             self.GELU,
 
-            nn.MaxPool1d(kernel_size=2, stride=2, padding=1)
+            # nn.MaxPool1d(kernel_size=2, stride=2, padding=1)
+            nn.MaxPool1d(kernel_size=2, stride=2, padding=0)
         )
         self.dropout = nn.Dropout(drate)
         self.inplanes = 128
@@ -134,11 +138,28 @@ class MRCNN(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        print(f"Input shape: {x.shape}")
         x1 = self.features1(x)
         x2 = self.features2(x)
+        # Print shapes to diagnose the issue
+        print(f"x1 shape after features1: {x1.shape}")
+        print(f"x2 shape after features2: {x2.shape}")
+
+        # Ensure x1 and x2 have the same length in the third dimension
+        if x1.size(2) != x2.size(2):
+            if x1.size(2) > x2.size(2):
+                x1 = x1[:, :, :x2.size(2)]
+            else:
+                x2 = x2[:, :, :x1.size(2)]
+
+        print(f"x1 shape after alignment: {x1.shape}")
+        print(f"x2 shape after alignment: {x2.shape}")
+
         x_concat = torch.cat((x1, x2), dim=2)
+        print(f"x_concat shape: {x_concat.shape}")
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
+        print(f"x_concat shape after AFR: {x_concat.shape}")
         return x_concat
 
 ##########################################################################################
@@ -306,7 +327,7 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        d_model = 30  # set to be 100 for SHHS dataset
+        d_model = 80  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
         dropout = 0.1
@@ -394,24 +415,9 @@ class MRCNN_SHHS(nn.Module):
     def forward(self, x):
         x1 = self.features1(x)
         x2 = self.features2(x)
-        
-        # Print shapes
-        print(f"x1 shape: {x1.shape}")
-        print(f"x2 shape: {x2.shape}")
 
-        # Ensure x1 and x2 have the same length in the third dimension
-        if x1.size(2) != x2.size(2):
-            if x1.size(2) > x2.size(2):
-                x1 = x1[:, :, :x2.size(2)]
-            else:
-                x2 = x2[:, :, :x1.size(2)]
-                
-        print(f"x1 shape after alignment: {x1.shape}")
-        print(f"x2 shape after alignment: {x2.shape}")
         
         x_concat = torch.cat((x1, x2), dim=2)
-        print(f"x_concat shape: {x_concat.shape}")
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
-        print(f"x_concat shape after AFR: {x_concat.shape}")
         return x_concat
