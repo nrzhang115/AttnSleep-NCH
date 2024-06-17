@@ -119,6 +119,10 @@ class MRCNN(nn.Module):
         self.dropout = nn.Dropout(drate)
         self.inplanes = 128
         self.AFR = self._make_layer(SEBasicBlock, afr_reduced_cnn_size, 1)
+        
+        # Projection layer to match d_model for transformer
+        # d_model = 80
+        self.projection = nn.Conv1d(256, 80, kernel_size=1, stride=1, bias=False)
 
     def _make_layer(self, block, planes, blocks, stride=1):  # makes residual SE block
         downsample = None
