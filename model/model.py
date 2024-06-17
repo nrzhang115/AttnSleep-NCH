@@ -156,10 +156,10 @@ class MRCNN(nn.Module):
              else:
                  x2 = x2[:, :, :x1.size(2)]
 
-        # print(f"x1 shape after alignment: {x1.shape}")
-        # print(f"x2 shape after alignment: {x2.shape}")
+        print(f"x1 shape after alignment: {x1.shape}")
+        print(f"x2 shape after alignment: {x2.shape}")
 
-        x_concat = torch.cat((x1, x2), dim=2)
+        x_concat = torch.cat((x1, x2), dim=1) # Original code dim=2
         print(f"x_concat shape: {x_concat.shape}")
         x_concat = self.projection(x_concat)
         print(f"x_concat shape after projection: {x_concat.shape}")
