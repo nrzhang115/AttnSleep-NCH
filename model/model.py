@@ -197,10 +197,10 @@ class MultiHeadedAttention(nn.Module):
     def forward(self, query, key, value):
         "Implements Multi-head attention"
         nbatches = query.size(0)
-
-        query = query.view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
-        key   = self.convs[1](key).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
-        value = self.convs[2](value).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
+        
+        query = query.view(nbatches, -1, self.h, self.d_k).transpose(1, 2).to(query.device)
+        key   = self.convs[1](key).view(nbatches, -1, self.h, self.d_k).transpose(1, 2).to(query.device)
+        value = self.convs[2](value).view(nbatches, -1, self.h, self.d_k).transpose(1, 2).to(query.device)
 
         x, self.attn = attention(query, key, value, dropout=self.dropout)
 
@@ -221,9 +221,10 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         print(f"LayerNorm input: {x.shape}")
+        device = x.device
         if self.a_2.size(0) != x.size(-1):
-            self.a_2 = nn.Parameter(torch.ones(x.size(-1)))
-            self.b_2 = nn.Parameter(torch.zeros(x.size(-1)))
+            self.a_2 = nn.Parameter(torch.ones(x.size(-1)).to(device))
+            self.b_2 = nn.Parameter(torch.zeros(x.size(-1)).to(device))
         mean = x.mean(-1, keepdim=True)
         std = x.std(-1, keepdim=True)
         normalized_x = self.a_2 * (x - mean) / (std + self.eps) + self.b_2
