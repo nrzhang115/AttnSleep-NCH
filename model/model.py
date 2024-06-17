@@ -331,9 +331,9 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        d_model = 256  # set to be 100 for SHHS dataset
+        d_model = 38  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
-        h = 8  # number of attention heads
+        h = 2  # number of attention heads, originally h = 5
         dropout = 0.1
         num_classes = 5
         afr_reduced_cnn_size = 30
