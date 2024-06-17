@@ -221,6 +221,9 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         print(f"LayerNorm input: {x.shape}")
+        if self.a_2.size(0) != x.size(-1):
+            self.a_2 = nn.Parameter(torch.ones(x.size(-1)))
+            self.b_2 = nn.Parameter(torch.zeros(x.size(-1)))
         mean = x.mean(-1, keepdim=True)
         std = x.std(-1, keepdim=True)
         normalized_x = self.a_2 * (x - mean) / (std + self.eps) + self.b_2
