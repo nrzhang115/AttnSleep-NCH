@@ -162,7 +162,7 @@ class MRCNN(nn.Module):
 
         x_concat = torch.cat((x1, x2), dim=1) # Original code dim=2
         print(f"x_concat shape: {x_concat.shape}")
-        x_concat = self.projection(x_concat)
+        x_concat = self.projection_after_afr(x_concat)
         print(f"x_concat shape after projection: {x_concat.shape}")
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
