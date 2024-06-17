@@ -197,7 +197,7 @@ class MultiHeadedAttention(nn.Module):
     def forward(self, query, key, value):
         "Implements Multi-head attention"
         nbatches = query.size(0)
-        seq_len = query.size(-1)  # Sequence length (number of time steps)
+        seq_len = query.size(2)  # Sequence length (number of time steps)
         # Debug Check
         print(f"Query shape before view: {query.shape}")
         print(f"Key shape before view: {key.shape}")
@@ -224,9 +224,11 @@ class MultiHeadedAttention(nn.Module):
         
         # Reshaping back to the original format
         x = x.transpose(1, 2).contiguous() \
-            .view(nbatches, -1, self.h * self.d_k)
-
+            .view(nbatches, self.d_k * self.h, seq_len)
+            
+        print(f"MultiHeadedAttention output shape: {x.shape}")
         return self.linear(x)
+        
 
 
 class LayerNorm(nn.Module):
@@ -268,6 +270,10 @@ class SublayerOutput(nn.Module):
         sublayer_x = sublayer(norm_x)
         print(f"Sublayer after norm: {norm_x.shape}")
         print(f"Sublayer output before residual: {sublayer_x.shape}")
+        
+        # check if the shapes of norm_x and sublayer_x are the same.
+        assert norm_x.shape == sublayer_x.shape, f"Shape mismatch: norm_x {norm_x.shape}, sublayer_x {sublayer_x.shape}"
+        
         result = x + self.dropout(sublayer_x)
         print(f"Sublayer output: {result.shape}")
         return result
