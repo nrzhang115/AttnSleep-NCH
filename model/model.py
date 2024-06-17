@@ -122,7 +122,7 @@ class MRCNN(nn.Module):
         
         # Projection layer to match d_model for transformer
         # d_model = 80
-        self.projection = nn.Conv1d(256, 80, kernel_size=1, stride=1, bias=False)
+        # self.projection = nn.Conv1d(256, 80, kernel_size=1, stride=1, bias=False)
 
     def _make_layer(self, block, planes, blocks, stride=1):  # makes residual SE block
         downsample = None
@@ -331,9 +331,9 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        d_model = 80  # set to be 100 for SHHS dataset
+        d_model = 256  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
-        h = 5  # number of attention heads
+        h = 8  # number of attention heads
         dropout = 0.1
         num_classes = 5
         afr_reduced_cnn_size = 30
