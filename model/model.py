@@ -263,7 +263,15 @@ class SublayerOutput(nn.Module):
 
     def forward(self, x, sublayer):
         "Apply residual connection to any sublayer with the same size."
-        return x + self.dropout(sublayer(self.norm(x)))
+        print(f"Sublayer input: {x.shape}")
+        norm_x = self.norm(x)
+        sublayer_x = sublayer(norm_x)
+        print(f"Sublayer after norm: {norm_x.shape}")
+        print(f"Sublayer output before residual: {sublayer_x.shape}")
+        result = x + self.dropout(sublayer_x)
+        print(f"Sublayer output: {result.shape}")
+        return result
+        #return x + self.dropout(sublayer(self.norm(x)))
 
 
 def clones(module, N):
