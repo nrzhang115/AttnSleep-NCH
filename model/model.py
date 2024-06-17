@@ -323,10 +323,15 @@ class AttnSleep(nn.Module):
         self.fc = nn.Linear(d_model * afr_reduced_cnn_size, num_classes) # Final Fully-connected Layer
 
     def forward(self, x):
+        print(f"Input shape: {x.shape}")
         x_feat = self.mrcnn(x)
+        print(f"After MRCNN: {x_feat.shape}")
         encoded_features = self.tce(x_feat)
+        print(f"After TCE: {encoded_features.shape}")
         encoded_features = encoded_features.contiguous().view(encoded_features.shape[0], -1)
+        print(f"After reshaping: {encoded_features.shape}")
         final_output = self.fc(encoded_features)
+        print(f"Final output shape: {final_output.shape}")
         return final_output
 
 ######################################################################
