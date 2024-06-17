@@ -123,8 +123,7 @@ class MRCNN(nn.Module):
         # Projection layer to match d_model for transformer
         # d_model = 80
         # Projection layer to match d_model for transformer
-        self.projection = nn.Conv1d(256, d_model, kernel_size=1, stride=1, bias=False)
-        self.projection_afr = nn.Conv1d(d_model, 128, kernel_size=1, stride=1, bias=False)  # Project back to 128 channels for AFR
+        self.projection_after_afr = nn.Conv1d(afr_reduced_cnn_size, d_model, kernel_size=1, stride=1, bias=False)
 
     def _make_layer(self, block, planes, blocks, stride=1):  # makes residual SE block
         downsample = None
