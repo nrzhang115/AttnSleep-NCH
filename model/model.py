@@ -136,6 +136,18 @@ class MRCNN(nn.Module):
     def forward(self, x):
         x1 = self.features1(x)
         x2 = self.features2(x)
+        #####################################################################
+        # Print shapes
+        print(f"x1 shape: {x1.shape}")
+        print(f"x2 shape: {x2.shape}")
+
+        # Ensure x1 and x2 have the same length in the third dimension
+        if x1.size(2) != x2.size(2):
+            if x1.size(2) > x2.size(2):
+                x1 = x1[:, :, :x2.size(2)]
+            else:
+                x2 = x2[:, :, :x1.size(2)]
+        #####################################################################
         x_concat = torch.cat((x1, x2), dim=2)
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
