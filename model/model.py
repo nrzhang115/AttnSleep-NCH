@@ -211,9 +211,9 @@ class MultiHeadedAttention(nn.Module):
         if total_elements != expected_elements:
             raise ValueError(f"Total elements ({total_elements}) do not match expected elements ({expected_elements})")
         
-        query = query.view(nbatches, self.h, -1, seq_len).transpose(1, 2).to(query.device)
-        key   = self.convs[1](key).view(nbatches, self.h, -1, seq_len).transpose(1, 2).to(query.device)
-        value = self.convs[2](value).view(nbatches, self.h, -1, seq_len).transpose(1, 2).to(query.device)
+        query = query.view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+        key   = self.convs[1](key).view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+        value = self.convs[2](value).view(nbatches, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
 
         # Debug Check After View
         print(f"Query shape after view: {query.shape}")
@@ -339,7 +339,8 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        d_model = 80  # set to be 100 for SHHS dataset
+        # Original d_model = 80
+        d_model = 30  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
         dropout = 0.1
