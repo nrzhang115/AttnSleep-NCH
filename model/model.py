@@ -122,7 +122,7 @@ class MRCNN(nn.Module):
         
         # Projection layer to match d_model for transformer
         # d_model = 80
-        # self.projection = nn.Conv1d(256, 80, kernel_size=1, stride=1, bias=False)
+        self.projection = nn.Conv1d(256, 80, kernel_size=1, stride=1, bias=False)
 
     def _make_layer(self, block, planes, blocks, stride=1):  # makes residual SE block
         downsample = None
@@ -146,24 +146,26 @@ class MRCNN(nn.Module):
         x1 = self.features1(x)
         x2 = self.features2(x)
         # Print shapes to diagnose the issue
-        # print(f"x1 shape after features1: {x1.shape}")
-        # print(f"x2 shape after features2: {x2.shape}")
+        print(f"x1 shape after features1: {x1.shape}")
+        print(f"x2 shape after features2: {x2.shape}")
 
         # Ensure x1 and x2 have the same length in the third dimension
-        # if x1.size(2) != x2.size(2):
-        #     if x1.size(2) > x2.size(2):
-        #         x1 = x1[:, :, :x2.size(2)]
-        #     else:
-        #         x2 = x2[:, :, :x1.size(2)]
+        if x1.size(2) != x2.size(2):
+             if x1.size(2) > x2.size(2):
+                 x1 = x1[:, :, :x2.size(2)]
+             else:
+                 x2 = x2[:, :, :x1.size(2)]
 
         # print(f"x1 shape after alignment: {x1.shape}")
         # print(f"x2 shape after alignment: {x2.shape}")
 
         x_concat = torch.cat((x1, x2), dim=2)
-        # print(f"x_concat shape: {x_concat.shape}")
+        print(f"x_concat shape: {x_concat.shape}")
+        x_concat = self.projection(x_concat)
+        print(f"x_concat shape after projection: {x_concat.shape}")
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
-        # print(f"x_concat shape after AFR: {x_concat.shape}")
+        print(f"x_concat shape after AFR: {x_concat.shape}")
         return x_concat
 
 ##########################################################################################
@@ -331,9 +333,9 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        d_model = 38  # set to be 100 for SHHS dataset
+        d_model = 80  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
-        h = 2  # number of attention heads, originally h = 5
+        h = 5  # number of attention heads, originally h = 5
         dropout = 0.1
         num_classes = 5
         afr_reduced_cnn_size = 30
