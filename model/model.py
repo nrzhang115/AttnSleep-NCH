@@ -306,7 +306,7 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        d_model = 101  # set to be 100 for SHHS dataset
+        d_model = 30  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
         dropout = 0.1
@@ -405,9 +405,13 @@ class MRCNN_SHHS(nn.Module):
                 x1 = x1[:, :, :x2.size(2)]
             else:
                 x2 = x2[:, :, :x1.size(2)]
+                
+        print(f"x1 shape after alignment: {x1.shape}")
+        print(f"x2 shape after alignment: {x2.shape}")
         
         x_concat = torch.cat((x1, x2), dim=2)
+        print(f"x_concat shape: {x_concat.shape}")
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
-
+        print(f"x_concat shape after AFR: {x_concat.shape}")
         return x_concat
