@@ -258,7 +258,7 @@ class TCE(nn.Module):
         self.norm = LayerNorm(layer.size)
 
     def forward(self, x):
-        for layer in self.layers:
+        for i, layer in enumerate(self.layers):
             print(f"Before layer {i}: {x.shape}")
             x = layer(x)
             print(f"After layer {i}: {x.shape}")
