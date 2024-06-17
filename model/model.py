@@ -197,21 +197,24 @@ class MultiHeadedAttention(nn.Module):
     def forward(self, query, key, value):
         "Implements Multi-head attention"
         nbatches = query.size(0)
-        seq_len = query.size(2)  # Sequence length (number of time steps)
+        seq_len = query.size(-1)  # Sequence length (number of time steps)
         # Debug Check
         print(f"Query shape before view: {query.shape}")
         print(f"Key shape before view: {key.shape}")
         print(f"Value shape before view: {value.shape}")
         
-        try:
-            query = query.view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
-            key   = self.convs[1](key).view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
-            value = self.convs[2](value).view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
-        except RuntimeError as e:
-            print(f"Error in reshaping: {e}")
-            print(f"query.size: {query.size()}, self.h: {self.h}, self.d_k: {self.d_k}, seq_len: {seq_len}")
-            raise e
-    
+        # Check if the total number of elements match
+        total_elements = query.numel()
+        expected_elements = nbatches * self.h * self.d_k * seq_len
+        print(f"Total elements: {total_elements}, Expected elements: {expected_elements}")
+
+        if total_elements != expected_elements:
+            raise ValueError(f"Total elements ({total_elements}) do not match expected elements ({expected_elements})")
+        
+        query = query.view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+        key   = self.convs[1](key).view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+        value = self.convs[2](value).view(nbatches, -1, self.h, self.d_k, seq_len).transpose(1, 2).to(query.device)
+
         # Debug Check After View
         print(f"Query shape after view: {query.shape}")
         print(f"Key shape after view: {key.shape}")
