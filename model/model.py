@@ -73,7 +73,7 @@ class GELU(nn.Module):
         
         
 class MRCNN(nn.Module):
-    def __init__(self, afr_reduced_cnn_size):
+    def __init__(self, afr_reduced_cnn_size, d_model):
         super(MRCNN, self).__init__()
         drate = 0.5
         self.GELU = GELU()  # for older versions of PyTorch.  For new versions use nn.GELU() instead.
@@ -122,7 +122,9 @@ class MRCNN(nn.Module):
         
         # Projection layer to match d_model for transformer
         # d_model = 80
-        self.projection = nn.Conv1d(256, 80, kernel_size=1, stride=1, bias=False)
+        # Projection layer to match d_model for transformer
+        self.projection = nn.Conv1d(256, d_model, kernel_size=1, stride=1, bias=False)
+        self.projection_afr = nn.Conv1d(d_model, 128, kernel_size=1, stride=1, bias=False)  # Project back to 128 channels for AFR
 
     def _make_layer(self, block, planes, blocks, stride=1):  # makes residual SE block
         downsample = None
@@ -338,7 +340,7 @@ class AttnSleep(nn.Module):
         h = 5  # number of attention heads, originally h = 5
         dropout = 0.1
         num_classes = 5
-        afr_reduced_cnn_size = 30
+        afr_reduced_cnn_size = 128 # Original one = 30
 
         self.mrcnn = MRCNN(afr_reduced_cnn_size) # use MRCNN_SHHS for SHHS dataset
 
