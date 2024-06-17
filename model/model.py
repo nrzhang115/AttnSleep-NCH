@@ -306,7 +306,7 @@ class AttnSleep(nn.Module):
         super(AttnSleep, self).__init__()
 
         N = 2  # number of TCE clones
-        d_model = 100  # set to be 100 for SHHS dataset
+        d_model = 101  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
         dropout = 0.1
