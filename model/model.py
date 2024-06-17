@@ -339,7 +339,8 @@ class MRCNN_SHHS(nn.Module):
             nn.Conv1d(1, 64, kernel_size=50, stride=6, bias=False, padding=24),
             nn.BatchNorm1d(64),
             self.GELU,
-            nn.MaxPool1d(kernel_size=8, stride=2, padding=4),
+            #nn.MaxPool1d(kernel_size=8, stride=2, padding=4),
+            nn.MaxPool1d(kernel_size=8, stride=4, padding=2),
             nn.Dropout(drate),
 
             nn.Conv1d(64, 128, kernel_size=8, stride=1, bias=False, padding=4),
@@ -350,25 +351,30 @@ class MRCNN_SHHS(nn.Module):
             nn.BatchNorm1d(128),
             self.GELU,
 
-            nn.MaxPool1d(kernel_size=4, stride=4, padding=2)
+            # nn.MaxPool1d(kernel_size=4, stride=4, padding=2)
+            nn.MaxPool1d(kernel_size=4, stride=4, padding=0)
         )
 
         self.features2 = nn.Sequential(
             nn.Conv1d(1, 64, kernel_size=400, stride=50, bias=False, padding=200),
             nn.BatchNorm1d(64),
             self.GELU,
-            nn.MaxPool1d(kernel_size=4, stride=2, padding=2),
+            # nn.MaxPool1d(kernel_size=4, stride=4, padding=2),
+            nn.MaxPool1d(kernel_size=4, stride=2, padding=1),
             nn.Dropout(drate),
 
-            nn.Conv1d(64, 128, kernel_size=6, stride=1, bias=False, padding=3),
+            # nn.Conv1d(64, 128, kernel_size=6, stride=1, bias=False, padding=3),
+            nn.Conv1d(64, 128, kernel_size=7, stride=1, bias=False, padding=3),
             nn.BatchNorm1d(128),
             self.GELU,
 
-            nn.Conv1d(128, 128, kernel_size=6, stride=1, bias=False, padding=3),
+            # nn.Conv1d(128, 128, kernel_size=6, stride=1, bias=False, padding=3),
+            nn.Conv1d(128, 128, kernel_size=7, stride=1, bias=False, padding=3),
             nn.BatchNorm1d(128),
             self.GELU,
 
-            nn.MaxPool1d(kernel_size=2, stride=2, padding=1)
+            # nn.MaxPool1d(kernel_size=2, stride=2, padding=1)
+            nn.MaxPool1d(kernel_size=2, stride=2, padding=0)
         )
         self.dropout = nn.Dropout(drate)
         self.inplanes = 128
@@ -394,6 +400,11 @@ class MRCNN_SHHS(nn.Module):
     def forward(self, x):
         x1 = self.features1(x)
         x2 = self.features2(x)
+        
+        # Debug: Print shapes
+        print(f"x1 shape: {x1.shape}")
+        print(f"x2 shape: {x2.shape}")
+        
         x_concat = torch.cat((x1, x2), dim=2)
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
