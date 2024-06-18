@@ -25,7 +25,8 @@ OSA = 1
 Hypopnea = 2
 CSA = 3
 OSH = 4
-UNKNOWN = 5
+MA = 5
+OTHER = 6
 
 stage_dict = {
     "Oxygen Desaturation": OD,
@@ -33,7 +34,9 @@ stage_dict = {
     "Hypopnea": Hypopnea,
     "Central Apnea": CSA,
     "Obstructive Hypopnea": OSH,
-    "UNKNOWN": UNKNOWN
+    "Mixed Apnea":  MA,
+    "OTHER": OTHER
+    
 }
 
 class_dict = {
@@ -42,7 +45,8 @@ class_dict = {
     2: "Hypopnea",
     3: "Central Apnea",
     4: "Obstructive Hypopnea",
-    5: "UNKNOWN"
+    5: "Mixed Apnea",
+    6: "OTHER"
 }
 
 ann2label = {
@@ -51,14 +55,16 @@ ann2label = {
     "Hypopnea": 2,
     "Central Apnea": 3,
     "Obstructive Hypopnea": 4,
-    "Sleep stage R": 5,
-    "Sleep stage W": 5,
-    "Sleep stage 1": 5,
-    "Sleep stage 2": 5,
-    "Sleep stage 3": 5,
-    "Sleep stage 4": 5,
-    "Sleep stage ?": 5,
-    "Movement time": 5
+    'Mixed Apnea':  5, 
+    'Sleep stage R': 6,
+    'Sleep stage W': 6,
+    'Sleep stage N1': 6,
+    'Sleep stage N2': 6,
+    'Sleep stage N3': 6,
+    'EEG Arousal': 6,
+    'Oximeter Event': 6,
+    'Move': 6,
+    'Limb Movement': 6
 }
 
 EPOCH_SEC_SIZE = 30
@@ -68,7 +74,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/srv/scratch/speechdata/sleep_data/NCH",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg/C4-M1",
+    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg_all/C4-M1",
                         help="Directory where to save numpy files outputs.")
     parser.add_argument("--select_ch", type=str, default="EEG C4-M1",
                         help="The selected channel")
