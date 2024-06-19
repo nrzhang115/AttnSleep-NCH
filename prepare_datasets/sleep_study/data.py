@@ -106,6 +106,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
             # Resampling data to aviod inhomogeneous shape issues
             if current_sampling_rate != target_sampling_rate:
                 interval_data = resample(interval_data, target_length)
+                print(f"Resampled data shape: {interval_data.shape}")
             data.append(interval_data)
             labels.append(label)
 
