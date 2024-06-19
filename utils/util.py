@@ -38,7 +38,7 @@ def load_folds_data(np_data_path, n_folds):
 
     files_dict = dict()
 
-    files_pairs = [[files[0],files[10],files[11]], [files[12],files[13],files[14]]]
+    files_pairs = [[files[0],files[1]], [files[2],files[3]]]
     file_pair = []
     '''for i in range(n_folds * 32):
         file_pair.append(files[i])
@@ -77,7 +77,7 @@ def calc_class_weight(labels_count):
     #mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
     # Apporach 1 Modification Starts. 
     # Adjust the class weight to address class imbalance.
-    mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor, factor*0.5]
+    mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*1.5, factor*0.1]
     # Apporach 1 Modification Ends
     
     # Debug Info

@@ -13,6 +13,8 @@ from utils.util import *
 import torch
 import torch.nn as nn
 
+from utils.util import calc_class_weight
+
 # fix random seeds for reproducibility
 SEED = 123
 torch.manual_seed(SEED)
