@@ -13,15 +13,12 @@ from utils.util import *
 import torch
 import torch.nn as nn
 
-from utils.util import calc_class_weight
-
 # fix random seeds for reproducibility
 SEED = 123
 torch.manual_seed(SEED)
 torch.backends.cudnn.deterministic = False
 torch.backends.cudnn.benchmark = False
 np.random.seed(SEED)
-
 
 def weights_init_normal(m):
     if type(m) == nn.Conv2d:
@@ -31,7 +28,6 @@ def weights_init_normal(m):
     elif type(m) == nn.BatchNorm1d:
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
-
 
 def main(config, fold_id):
     batch_size = config["data_loader"]["args"]["batch_size"]
@@ -49,34 +45,23 @@ def main(config, fold_id):
 
     # build optimizer
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
 
-    #print(fold_id)
-    print('fold0:')
-    print(folds_data[0][1])
-    print('fold1:')
-    print(folds_data[1][1])
-    #print('fold2:')
-    #print(folds_data[2][1])
-   
+    # Load data
+    train_data, train_labels = folds_data[fold_id][0]
+    valid_data, valid_labels = folds_data[fold_id][1]
 
-    data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0], 
-                                                                   folds_data[fold_id][1], batch_size)
-                                                                   
-                                                                   
-    print()
-    weights_for_each_class = calc_class_weight(data_count)
+    train_loader = data_generator_np(train_data, train_labels, batch_size)
+    valid_loader = data_generator_np(valid_data, valid_labels, batch_size)
 
     trainer = Trainer(model, criterion, metrics, optimizer,
                       config=config,
-                      data_loader=data_loader,
+                      data_loader=train_loader,
                       fold_id=fold_id,
-                      valid_data_loader=valid_data_loader,
-                      class_weights=weights_for_each_class)
+                      valid_data_loader=valid_loader,
+                      class_weights=None)
 
     trainer.train()
-
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description='PyTorch Template')
@@ -102,6 +87,5 @@ if __name__ == '__main__':
         folds_data = load_folds_data_shhs(args2.np_data_dir, config["data_loader"]["args"]["num_folds"])
     else:
         folds_data = load_folds_data(args2.np_data_dir, config["data_loader"]["args"]["num_folds"])
-
 
     main(config, fold_id)
