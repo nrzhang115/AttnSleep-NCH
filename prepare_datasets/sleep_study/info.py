@@ -91,7 +91,7 @@ HEALTH_DATA_FNS = [DEMOGRAPHIC,
                    SLEEP_STUDY_NAME]
 INTERVAL = 30 # seconds.
 # Changed from 100 to 128
-REFERENCE_FREQ = 128 # Hz. 80% of the studies have sampling frequency of 256 HZ.
+REFERENCE_FREQ = 100 # Hz. 80% of the studies have sampling frequency of 256 HZ.
 
 def load_health_info(name, convert_datetime=True):
     assert type(name) == str
