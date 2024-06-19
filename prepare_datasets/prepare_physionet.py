@@ -126,6 +126,7 @@ def main():
         if len(all_data) > 0:
             x = np.asarray(all_data).astype(np.float32)
             y = np.asarray(all_labels).astype(np.int32)
+            print(f"Final data shape to be saved: {x.shape}")
             # Save
             # filename = '/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg/C4-M1/' + str(
             #     age_groups[i][0]) + '_' + str(age_groups[i][1]) + 'yrs_' + \
