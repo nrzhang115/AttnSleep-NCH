@@ -73,7 +73,7 @@ class GELU(nn.Module):
         
         
 class MRCNN(nn.Module):
-    def __init__(self, afr_reduced_cnn_size, d_model):
+    def __init__(self, afr_reduced_cnn_size):
         super(MRCNN, self).__init__()
         drate = 0.5
         self.GELU = GELU()  # for older versions of PyTorch.  For new versions use nn.GELU() instead.
@@ -81,8 +81,7 @@ class MRCNN(nn.Module):
             nn.Conv1d(1, 64, kernel_size=50, stride=6, bias=False, padding=24),
             nn.BatchNorm1d(64),
             self.GELU,
-            # nn.MaxPool1d(kernel_size=8, stride=2, padding=4),
-            nn.MaxPool1d(kernel_size=8, stride=4, padding=2),
+            nn.MaxPool1d(kernel_size=8, stride=2, padding=4),
             nn.Dropout(drate),
 
             nn.Conv1d(64, 128, kernel_size=8, stride=1, bias=False, padding=4),
@@ -93,16 +92,14 @@ class MRCNN(nn.Module):
             nn.BatchNorm1d(128),
             self.GELU,
 
-            #nn.MaxPool1d(kernel_size=4, stride=4, padding=2)
-            nn.MaxPool1d(kernel_size=4, stride=4, padding=0)
+            nn.MaxPool1d(kernel_size=4, stride=4, padding=2)
         )
 
         self.features2 = nn.Sequential(
             nn.Conv1d(1, 64, kernel_size=400, stride=50, bias=False, padding=200),
             nn.BatchNorm1d(64),
             self.GELU,
-            # nn.MaxPool1d(kernel_size=4, stride=2, padding=2),
-            nn.MaxPool1d(kernel_size=4, stride=2, padding=1),
+            nn.MaxPool1d(kernel_size=4, stride=2, padding=2),
             nn.Dropout(drate),
 
             nn.Conv1d(64, 128, kernel_size=7, stride=1, bias=False, padding=3),
@@ -113,17 +110,11 @@ class MRCNN(nn.Module):
             nn.BatchNorm1d(128),
             self.GELU,
 
-            # nn.MaxPool1d(kernel_size=2, stride=2, padding=1)
-            nn.MaxPool1d(kernel_size=2, stride=2, padding=0)
+            nn.MaxPool1d(kernel_size=2, stride=2, padding=1)
         )
         self.dropout = nn.Dropout(drate)
         self.inplanes = 128
         self.AFR = self._make_layer(SEBasicBlock, afr_reduced_cnn_size, 1)
-        
-        # Projection layer to match d_model for transformer
-        # d_model = 80
-        # Projection layer to match d_model for transformer
-        self.projection_after_afr = nn.Conv1d(afr_reduced_cnn_size, d_model, kernel_size=1, stride=1, bias=False)
 
     def _make_layer(self, block, planes, blocks, stride=1):  # makes residual SE block
         downsample = None
@@ -143,30 +134,11 @@ class MRCNN(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        print(f"Input shape: {x.shape}")
         x1 = self.features1(x)
         x2 = self.features2(x)
-        # Print shapes to diagnose the issue
-        print(f"x1 shape after features1: {x1.shape}")
-        print(f"x2 shape after features2: {x2.shape}")
-
-        # Ensure x1 and x2 have the same length in the third dimension
-        if x1.size(2) != x2.size(2):
-             if x1.size(2) > x2.size(2):
-                 x1 = x1[:, :, :x2.size(2)]
-             else:
-                 x2 = x2[:, :, :x1.size(2)]
-
-        print(f"x1 shape after alignment: {x1.shape}")
-        print(f"x2 shape after alignment: {x2.shape}")
-
-        x_concat = torch.cat((x1, x2), dim=1) # Original code dim=2
-        print(f"x_concat shape: {x_concat.shape}")
-        x_concat = self.projection_after_afr(x_concat)
-        print(f"x_concat shape after projection: {x_concat.shape}")
+        x_concat = torch.cat((x1, x2), dim=2)
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
-        print(f"x_concat shape after AFR: {x_concat.shape}")
         return x_concat
 
 ##########################################################################################
@@ -336,12 +308,12 @@ class AttnSleep(nn.Module):
         N = 2  # number of TCE clones
         d_model = 80  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
-        h = 5  # number of attention heads, originally h = 5
+        h = 5  # number of attention heads
         dropout = 0.1
-        num_classes = 5
-        afr_reduced_cnn_size = 128 # Original one = 30
+        num_classes = 7
+        afr_reduced_cnn_size = 30
 
-        self.mrcnn = MRCNN(afr_reduced_cnn_size, d_model) # use MRCNN_SHHS for SHHS dataset
+        self.mrcnn = MRCNN(afr_reduced_cnn_size) # use MRCNN_SHHS for SHHS dataset
 
         attn = MultiHeadedAttention(h, d_model, afr_reduced_cnn_size)
         ff = PositionwiseFeedForward(d_model, d_ff, dropout)
@@ -385,7 +357,7 @@ class MRCNN_SHHS(nn.Module):
             nn.Conv1d(1, 64, kernel_size=400, stride=50, bias=False, padding=200),
             nn.BatchNorm1d(64),
             self.GELU,
-            nn.MaxPool1d(kernel_size=4, stride=4, padding=2),
+            nn.MaxPool1d(kernel_size=4, stride=2, padding=2),
             nn.Dropout(drate),
 
             nn.Conv1d(64, 128, kernel_size=6, stride=1, bias=False, padding=3),
@@ -422,9 +394,8 @@ class MRCNN_SHHS(nn.Module):
     def forward(self, x):
         x1 = self.features1(x)
         x2 = self.features2(x)
-
-        
         x_concat = torch.cat((x1, x2), dim=2)
         x_concat = self.dropout(x_concat)
         x_concat = self.AFR(x_concat)
+
         return x_concat
