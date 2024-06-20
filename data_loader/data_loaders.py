@@ -5,7 +5,7 @@ import numpy as np
 
 class LoadDataset_from_numpy(Dataset):
     # Initialize your data, download, etc.
-    def __init__(self, np_dataset):
+    def __init__(self, np_dataset, sample_ratio=0.1):
         super(LoadDataset_from_numpy, self).__init__()
 
         # load files
@@ -15,7 +15,15 @@ class LoadDataset_from_numpy(Dataset):
         for np_file in np_dataset[1:]:
             X_train = np.vstack((X_train, np.load(np_file)["x"]))
             y_train = np.append(y_train, np.load(np_file)["y"])
-
+        ######################################################################
+        # Sampling 10% of the data
+        total_samples = X_train.shape[0]
+        sample_size = int(total_samples * sample_ratio)
+        indices = np.random.choice(total_samples, sample_size, replace=False)
+        
+        X_train = X_train[indices]
+        y_train = y_train[indices]
+        ######################################################################
         self.len = X_train.shape[0]
         self.x_data = torch.from_numpy(X_train)
         self.y_data = torch.from_numpy(y_train).long()
