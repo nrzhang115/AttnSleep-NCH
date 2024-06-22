@@ -18,11 +18,15 @@ class LoadDataset_from_numpy(Dataset):
         ######################################################################
         # Sampling 10% of the data
         total_samples = X_train.shape[0]
+        print(f"Total samples before sampling: {total_samples}")
         sample_size = int(total_samples * sample_ratio)
         indices = np.random.choice(total_samples, sample_size, replace=False)
         
         X_train = X_train[indices]
         y_train = y_train[indices]
+        # Total number of samples after sampling
+        sampled_samples = X_train.shape[0]
+        print(f"Total samples after sampling: {sampled_samples}")
         ######################################################################
         self.len = X_train.shape[0]
         self.x_data = torch.from_numpy(X_train)
@@ -59,12 +63,12 @@ def data_generator_np(training_files, subject_files, batch_size):
                                                batch_size=batch_size,
                                                shuffle=True,
                                                drop_last=False,
-                                               num_workers=0)
+                                               num_workers=16)
 
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
                                               batch_size=batch_size,
                                               shuffle=False,
                                               drop_last=False,
-                                              num_workers=0)
+                                              num_workers=16)
 
     return train_loader, test_loader, counts
