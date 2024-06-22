@@ -23,35 +23,35 @@ def load_folds_data_shhs(np_data_path, n_folds):
     return folds_data
 
 ####################################################################
-# Oversampling to handle data imbalance 
-# def oversample_data(data, labels):
-#     unique, counts = np.unique(labels, return_counts=True)
-#     max_count = np.max(counts)
+#  Oversampling to handle data imbalance 
+def oversample_data(data, labels):
+    unique, counts = np.unique(labels, return_counts=True)
+    max_count = np.max(counts)
     
-#     oversampled_data = []
-#     oversampled_labels = []
+    oversampled_data = []
+    oversampled_labels = []
     
-#     for label in unique:
-#         class_data = data[labels == label]
-#         num_to_add = max_count - len(class_data)
+    for label in unique:
+        class_data = data[labels == label]
+        num_to_add = max_count - len(class_data)
         
-#         if num_to_add == 0:
-#             oversampled_data.append(class_data)
-#             oversampled_labels.extend([label] * len(class_data))
-#         else:
-#             oversampled_class_data = np.tile(class_data, (num_to_add // len(class_data) + 1, 1, 1))
-#             oversampled_class_data = oversampled_class_data[:num_to_add]
+        if num_to_add == 0:
+            oversampled_data.append(class_data)
+            oversampled_labels.extend([label] * len(class_data))
+        else:
+            oversampled_class_data = np.tile(class_data, (num_to_add // len(class_data) + 1, 1, 1))
+            oversampled_class_data = oversampled_class_data[:num_to_add]
             
-#             oversampled_data.append(np.concatenate((class_data, oversampled_class_data), axis=0))
-#             oversampled_labels.extend([label] * (len(class_data) + num_to_add))
+            oversampled_data.append(np.concatenate((class_data, oversampled_class_data), axis=0))
+            oversampled_labels.extend([label] * (len(class_data) + num_to_add))
     
-#     oversampled_data = np.concatenate(oversampled_data, axis=0)
-#     oversampled_labels = np.array(oversampled_labels)
+    oversampled_data = np.concatenate(oversampled_data, axis=0)
+    oversampled_labels = np.array(oversampled_labels)
     
-#     indices = np.arange(len(oversampled_labels))
-#     np.random.shuffle(indices)
+    indices = np.arange(len(oversampled_labels))
+    np.random.shuffle(indices)
     
-#     return oversampled_data[indices], oversampled_labels[indices]
+    return oversampled_data[indices], oversampled_labels[indices]
 ############################################################################
 
 def load_folds_data(np_data_path, n_folds):
@@ -71,7 +71,7 @@ def load_folds_data(np_data_path, n_folds):
 
     files_dict = dict()
 
-    files_pairs = [[files[0],files[1]], [files[2],files[3]]]
+    files_pairs = [[files[0],files[8],files[9],files[10]], [files[11],files[12],files[13],files[14]]]
     file_pair = []
     '''for i in range(n_folds * 32):
         file_pair.append(files[i])
@@ -93,26 +93,26 @@ def load_folds_data(np_data_path, n_folds):
         folds_data[fold_id] = [training_files, subject_files]
     ############################################################################
     # Load data from .npz files and apply oversampling
-    # def load_data_from_files(files):
-    #     data_list = []
-    #     labels_list = []
-    #     for file in files:
-    #         with np.load(file) as npzfile:
-    #             data_list.append(npzfile['x'])
-    #             labels_list.append(npzfile['y'])
-    #     data = np.concatenate(data_list, axis=0)
-    #     labels = np.concatenate(labels_list, axis=0)
-    #     return data, labels
+    def load_data_from_files(files):
+        data_list = []
+        labels_list = []
+        for file in files:
+            with np.load(file) as npzfile:
+                data_list.append(npzfile['x'])
+                labels_list.append(npzfile['y'])
+        data = np.concatenate(data_list, axis=0)
+        labels = np.concatenate(labels_list, axis=0)
+        return data, labels
 
-    # for fold_id in folds_data:
-    #     train_files, test_files = folds_data[fold_id]
-    #     train_data, train_labels = load_data_from_files(train_files)
-    #     test_data, test_labels = load_data_from_files(test_files)
+    for fold_id in folds_data:
+        train_files, test_files = folds_data[fold_id]
+        train_data, train_labels = load_data_from_files(train_files)
+        test_data, test_labels = load_data_from_files(test_files)
 
-    #     # Oversample training data
-    #     train_data, train_labels = oversample_data(train_data, train_labels)
+        # Oversample training data
+        train_data, train_labels = oversample_data(train_data, train_labels)
 
-    #     folds_data[fold_id] = [(train_data, train_labels), (test_data, test_labels)]
+        folds_data[fold_id] = [(train_data, train_labels), (test_data, test_labels)]
     #####################################################################################
 
     return folds_data
@@ -133,8 +133,8 @@ def calc_class_weight(labels_count):
     #mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
     # Apporach 1 Modification Starts. 
     # Adjust the class weight to address class imbalance.
-    mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
-    # mu = [factor] * num_classes
+    # mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
+    mu = [factor] * num_classes
     # Apporach 1 Modification Ends
     
     # Debug Info
