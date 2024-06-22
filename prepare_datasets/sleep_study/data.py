@@ -18,9 +18,10 @@ def clean_ch_names(ch_names):
     return [x.upper() for x in ch_names]
 
 # Initializes a list of study names by reading .edf files in the Sleep_Data directory.
-def init_study_list():
-    path = ss.data_dir
-    return [x[:-4] for x in os.listdir(path) if x.endswith('edf')]
+def init_study_list(percentage=10):
+    all_studies = [x[:-4] for x in os.listdir(path) if x.endswith('edf')]
+    sample_size = int(len(all_studies) * percentage / 100)
+    return all_studies[:sample_size]
 
 def init_age_file():
     new_fn = 'age_file.csv'

@@ -104,6 +104,9 @@ def main():
                         help="Directory where to save numpy files outputs.")
     parser.add_argument("--select_ch", type=str, default="EEG C4-M1",
                         help="The selected channel")
+    # Initialise 10% of the dataset
+    parser.add_argument("--percentage", type=int, default=10, 
+                    help="Percentage of the dataset to process")
     args = parser.parse_args()
 
     # Output dir
@@ -126,6 +129,10 @@ def main():
 
     ss.init()
     print('total number of sleep study files available:', len(ss.data.study_list))
+    # Initialize study list with the given percentage
+    total_studies = len(ss.data.study_list)
+    sample_size = int(total_studies * args.percentage / 100)
+    sample_study_list = ss.data.study_list[:sample_size]
     age_groups = list(zip(range(0, 18), range(1, 19))) + [(18, 100)]
 
     tmp = np.load('/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/study_lists.npz', allow_pickle=True)
@@ -138,6 +145,9 @@ def main():
         all_data = []
         all_labels = []
         for j, name in enumerate(study_lists[i]):
+            if name not in sample_study_list:
+                continue
+            
             data, labels = ss.data.get_raw_eeg_and_labels(name, args.data_dir, select_ch)
             
             # Modified: Skip the file if no specified events are found
