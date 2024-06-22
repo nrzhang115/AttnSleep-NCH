@@ -15,7 +15,7 @@ class LoadDataset_from_numpy(Dataset):
         for np_file in np_dataset[1:]:
             X_train = np.vstack((X_train, np.load(np_file)["x"]))
             y_train = np.append(y_train, np.load(np_file)["y"])
-            
+
         self.len = X_train.shape[0]
         self.x_data = torch.from_numpy(X_train)
         self.y_data = torch.from_numpy(y_train).long()
@@ -26,10 +26,7 @@ class LoadDataset_from_numpy(Dataset):
                 self.x_data = self.x_data.permute(0, 2, 1)
         else:
             self.x_data = self.x_data.unsqueeze(1)
-        ###################################################################################
-        # Verify data shapes
-        print(f"Loaded data shape: {self.x_data.shape}, Labels shape: {self.y_data.shape}")
-        ###################################################################################
+
     def __getitem__(self, index):
         return self.x_data[index], self.y_data[index]
 
