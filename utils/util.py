@@ -128,9 +128,11 @@ def load_folds_data(np_data_path, n_folds):
     return folds_data
 
 
-def calc_class_weight(labels_count, num_classes):
+def calc_class_weight(labels_count):
     # Already applied oversampling 
+    num_classes = len(labels_count)
     class_weight = [1.0] * num_classes
+    print(f"Number of Classes: {num_classes}")
     
     # # Without Oversampling
     # total = np.sum(labels_count)
