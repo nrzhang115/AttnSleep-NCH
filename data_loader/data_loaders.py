@@ -5,7 +5,7 @@ import numpy as np
 
 class LoadDataset_from_numpy(Dataset):
     # Initialize your data, download, etc.
-    def __init__(self, np_dataset, sample_ratio=0.1):
+    def __init__(self, np_dataset):
         super(LoadDataset_from_numpy, self).__init__()
 
         # load files
@@ -51,12 +51,12 @@ def data_generator_np(training_files, subject_files, batch_size):
                                                batch_size=batch_size,
                                                shuffle=True,
                                                drop_last=False,
-                                               num_workers=16)
+                                               num_workers=0)
 
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
                                               batch_size=batch_size,
                                               shuffle=False,
                                               drop_last=False,
-                                              num_workers=16)
+                                              num_workers=0)
 
     return train_loader, test_loader, counts
