@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from time import time
+import random
 
 import sleep_study as ss
 
@@ -21,7 +22,7 @@ def create_dataset(output_dir='~/sleep_study_dataset', percentage=40):
     broken = []
     total = len(ss.data.study_list)
     sample_size = int(total * percentage / 100)  # Calculate 10% of the total dataset
-    sample_study_list = ss.data.study_list[:sample_size]
+    sample_study_list = random.sample(ss.data.study_list, sample_size)
 
     for i, name in enumerate(sample_study_list):
         if i % 100 == 0:
