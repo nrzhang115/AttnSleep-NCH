@@ -128,34 +128,38 @@ def load_folds_data(np_data_path, n_folds):
     return folds_data
 
 
-def calc_class_weight(labels_count):
-    total = np.sum(labels_count)
-    class_weight = dict()
-    num_classes = len(labels_count)
-    # Debugging information
-    print(f"Total: {total}")
-    print(f"Number of Classes: {num_classes}")
-    print(f"Labels Count: {labels_count}")
-
-    #############################################################################
-    # Appoarch 1 (From the original code)
-    factor = 1 / (num_classes)
-    # mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
-    # Apporach 1 Modification Starts. 
-    # Adjust the class weight to address class imbalance.
-    # mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
-    mu = [factor] * num_classes
-    # Apporach 1 Modification Ends
+def calc_class_weight(labels_count, num_classes):
+    # Already applied oversampling 
+    class_weight = [1.0] * num_classes
     
-    # Debug Info
-    print(f"Mu: {mu}")
-    
-    for key in range(num_classes):
-        score = math.log(mu[key] * total / float(labels_count[key]))
-        class_weight[key] = score if score > 1.0 else 1.0
-        class_weight[key] = round(class_weight[key] * mu[key], 2)
+    # # Without Oversampling
+    # total = np.sum(labels_count)
+    # class_weight = dict()
+    # num_classes = len(labels_count)
+    # # Debugging information
+    # print(f"Total: {total}")
+    # print(f"Number of Classes: {num_classes}")
+    # print(f"Labels Count: {labels_count}")
 
-    class_weight = [class_weight[i] for i in range(num_classes)]
+    # #############################################################################
+    # # Appoarch 1 (From the original code)
+    # factor = 1 / (num_classes)
+    # # mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
+    # # Apporach 1 Modification Starts. 
+    # # Adjust the class weight to address class imbalance.
+    # # mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
+    # mu = [factor] * num_classes
+    # # Apporach 1 Modification Ends
+    
+    # # Debug Info
+    # print(f"Mu: {mu}")
+    
+    # for key in range(num_classes):
+    #     score = math.log(mu[key] * total / float(labels_count[key]))
+    #     class_weight[key] = score if score > 1.0 else 1.0
+    #     class_weight[key] = round(class_weight[key] * mu[key], 2)
+
+    # class_weight = [class_weight[i] for i in range(num_classes)]
     
     return class_weight
 
