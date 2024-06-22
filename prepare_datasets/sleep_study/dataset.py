@@ -16,7 +16,7 @@ def check_annotations(df):
     return any(event_dict.values())
 
 
-def create_dataset(output_dir='~/sleep_study_dataset', percentage=10):
+def create_dataset(output_dir='~/sleep_study_dataset', percentage=40):
     output_dir = os.path.abspath(os.path.expanduser(output_dir))
     broken = []
     total = len(ss.data.study_list)
@@ -81,7 +81,7 @@ def get_studies_by_patient_age(low, high, txt_path='age_file.csv'):
 
     return df.FILE_NAME.tolist(), df.AGE_AT_SLEEP_STUDY_DAYS.tolist()
 
-def annotation_stats(percentage=10):  # Default percentage to 10 for consistency
+def annotation_stats(percentage=40):  # Default percentage to 10 for consistency
     output_dir = './'
 
     broken = []

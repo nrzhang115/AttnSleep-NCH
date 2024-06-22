@@ -309,7 +309,7 @@ class AttnSleep(nn.Module):
         d_model = 80  # set to be 100 for SHHS dataset
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
-        dropout = 0.2 # Original: 0.1
+        dropout = 0.1 # Original: 0.1
         num_classes = 5
         afr_reduced_cnn_size = 30
 

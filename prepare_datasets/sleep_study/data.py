@@ -18,7 +18,7 @@ def clean_ch_names(ch_names):
     return [x.upper() for x in ch_names]
 
 # Initializes a list of study names by reading .edf files in the Sleep_Data directory.
-def init_study_list(percentage=10):
+def init_study_list(percentage=40):
     path = ss.data_dir
     all_studies = [x[:-4] for x in os.listdir(path) if x.endswith('edf')]
     sample_size = int(len(all_studies) * percentage / 100)
