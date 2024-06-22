@@ -106,13 +106,21 @@ def load_folds_data(np_data_path, n_folds):
 
     for fold_id in folds_data:
         train_files, test_files = folds_data[fold_id]
+        # Debugging output before loading files
+        print(f"Fold {fold_id} train_files: {train_files}")
+        print(f"Fold {fold_id} test_files: {test_files}")
+        
         train_data, train_labels = load_data_from_files(train_files)
         test_data, test_labels = load_data_from_files(test_files)
 
         # Oversample training data
         train_data, train_labels = oversample_data(train_data, train_labels)
+        
+        # Debugging output after oversampling
+        print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
+        print(f"Fold {fold_id} oversampled train_labels shape: {train_labels.shape}")
 
-        folds_data[fold_id] = [(train_data, train_labels), (test_data, test_labels)]
+        folds_data[fold_id] = [train_files, test_files]
     #####################################################################################
 
     return folds_data
