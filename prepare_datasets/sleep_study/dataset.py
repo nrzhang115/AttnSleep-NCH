@@ -17,12 +17,13 @@ def check_annotations(df):
     return any(event_dict.values())
 
 
-def create_dataset(output_dir='~/sleep_study_dataset', percentage=40):
+def create_dataset(output_dir='~/sleep_study_dataset', percentage=100):
     output_dir = os.path.abspath(os.path.expanduser(output_dir))
     broken = []
     total = len(ss.data.study_list)
     sample_size = int(total * percentage / 100)  # Calculate 10% of the total dataset
-    sample_study_list = random.sample(ss.data.study_list, sample_size)
+    #sample_study_list = random.sample(ss.data.study_list, sample_size)
+    sample_study_list = ss.data.study_list[:sample_size]
 
     for i, name in enumerate(sample_study_list):
         if i % 100 == 0:
@@ -82,7 +83,7 @@ def get_studies_by_patient_age(low, high, txt_path='age_file.csv'):
 
     return df.FILE_NAME.tolist(), df.AGE_AT_SLEEP_STUDY_DAYS.tolist()
 
-def annotation_stats(percentage=40):  # Default percentage to 10 for consistency
+def annotation_stats(percentage=100):  # Default percentage to 10 for consistency
     output_dir = './'
 
     broken = []
