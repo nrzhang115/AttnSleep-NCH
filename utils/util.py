@@ -54,135 +54,78 @@ def oversample_data(data, labels):
     print("Class distribution after oversampling:", np.bincount(oversampled_labels))
     
     return oversampled_data[indices], oversampled_labels[indices]
-
-
 ############################################################################
 
-def load_folds_data(np_data_path):
+def load_folds_data(np_data_path, n_folds):
     # Loads all .npz files from the specified directory
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
 
-    # files_dict = dict()
+    files_dict = dict()
 
-    # files_pairs = [[files[0],files[10],files[11],files[12]], [files[13],files[14],files[15],files[16]]]
-    # file_pair = []
-    # '''for i in range(n_folds * 32):
-    #     file_pair.append(files[i])
-    #     if (i + 1) % 32 == 0:
-    #         files_pairs.append(file_pair)
-    #         file_pair = []'''
+    files_pairs = [[files[0],files[10],files[11],files[12]], [files[13],files[14],files[15],files[16]]]
+    file_pair = []
+    '''for i in range(n_folds * 32):
+        file_pair.append(files[i])
+        if (i + 1) % 32 == 0:
+            files_pairs.append(file_pair)
+            file_pair = []'''
 
-    # '''for key in files_dict:
-    #     files_pairs.append(files_dict[key])'''
-    # files_pairs = np.array(files_pairs)
-    # print(files_pairs)
-    # train_files = np.array_split(files_pairs, n_folds)
-    # folds_data = {}
-    # for fold_id in range(n_folds):
-    #     subject_files = train_files[fold_id]
-    #     subject_files = [item for sublist in subject_files for item in sublist]
-    #     files_pairs2 = [item for sublist in files_pairs for item in sublist]
-    #     # Determine training files by excluding subject_files
-    #     training_files = list(set(files_pairs2) - set(subject_files))
+    '''for key in files_dict:
+        files_pairs.append(files_dict[key])'''
+    files_pairs = np.array(files_pairs)
+    print(files_pairs)
+    train_files = np.array_split(files_pairs, n_folds)
+    folds_data = {}
+    for fold_id in range(n_folds):
+        subject_files = train_files[fold_id]
+        subject_files = [item for sublist in subject_files for item in sublist]
+        files_pairs2 = [item for sublist in files_pairs for item in sublist]
+        # Determine training files by excluding subject_files
+        training_files = list(set(files_pairs2) - set(subject_files))
         
-    #     # Debugging prints
-    #     print(f"Fold {fold_id + 1} - Files pairs:")
-    #     print(subject_files)
-    #     print(training_files)
-    #     print(f"Training files count: {len(training_files)}")
-    #     print(f"Testing/Validation files count: {len(subject_files)}")
-    #     print(f"Total files: {len(training_files) + len(subject_files)}")
-    #     print("=" * 40)
+        # Debugging prints
+        print(f"Fold {fold_id + 1} - Files pairs:")
+        print(subject_files)
+        print(training_files)
+        print(f"Training files count: {len(training_files)}")
+        print(f"Testing/Validation files count: {len(subject_files)}")
+        print(f"Total files: {len(training_files) + len(subject_files)}")
+        print("=" * 40)
         
-    #     folds_data[fold_id] = [training_files, subject_files]
-    ############################################################################
-    # Pick the file for training and testing 
-    print(files)
-    file_to_use = files[0]
-    
-    # Determine split indices for training and testing
-    total_samples = len(np.load(file_to_use)['x'])
-    train_samples = int(0.7 * total_samples)
-    test_samples = total_samples - train_samples
-    
-    # Split data indices
-    indices = np.arange(total_samples)
-    np.random.shuffle(indices)
-    train_indices = indices[:train_samples]
-    test_indices = indices[train_samples:]
-    
-    
-    # Create training and testing data and labels
-    train_data = np.load(file_to_use)['x'][train_indices]
-    train_labels = np.load(file_to_use)['y'][train_indices]
-    test_data = np.load(file_to_use)['x'][test_indices]
-    test_labels = np.load(file_to_use)['y'][test_indices]
-    
-    # Perform oversampling on training data
-    train_data, train_labels = oversample_data(train_data, train_labels)
-    
-    # Save data to new files (you can adjust the file paths as needed)
-    train_file_path = os.path.join(np_data_path, "train_data.npz")
-    test_file_path = os.path.join(np_data_path, "test_data.npz")
-    
-    np.savez(train_file_path, x=train_data, y=train_labels)
-    np.savez(test_file_path, x=test_data, y=test_labels)
-    
-    print(f"Train file path: {train_file_path}")
-    print(f"Test file path: {test_file_path}")
-    
-    train_test_paths = [train_file_path,test_file_path]
-    print(f"Folds data: {train_test_paths}")
-    # # Load data from .npz files and apply oversampling
-    # def load_data_from_files(files):
-    #     data_list = []
-    #     labels_list = []
-    #     for file in files:
-    #         with np.load(file) as npzfile:
-    #             data_list.append(npzfile['x'])
-    #             labels_list.append(npzfile['y'])
-    #     data = np.concatenate(data_list, axis=0)
-    #     labels = np.concatenate(labels_list, axis=0)
-    #     return data, labels
+        folds_data[fold_id] = [training_files, subject_files]
+    ###########################################################################
+    # Load data from .npz files and apply oversampling
+    def load_data_from_files(files):
+        data_list = []
+        labels_list = []
+        for file in files:
+            with np.load(file) as npzfile:
+                data_list.append(npzfile['x'])
+                labels_list.append(npzfile['y'])
+        data = np.concatenate(data_list, axis=0)
+        labels = np.concatenate(labels_list, axis=0)
+        return data, labels
 
-    # for fold_id in folds_data:
-    #     train_files, test_files = folds_data[fold_id]
-    #     # Debugging output before loading files
-    #     print(f"Fold {fold_id} train_files: {train_files}")
-    #     print(f"Fold {fold_id} test_files: {test_files}")
+    for fold_id in folds_data:
+        train_files, test_files = folds_data[fold_id]
+        # Debugging output before loading files
+        print(f"Fold {fold_id} train_files: {train_files}")
+        print(f"Fold {fold_id} test_files: {test_files}")
         
-    #     train_data, train_labels = load_data_from_files(train_files)
-    #     test_data, test_labels = load_data_from_files(test_files)
+        train_data, train_labels = load_data_from_files(train_files)
+        test_data, test_labels = load_data_from_files(test_files)
 
-        # # Oversample training data
-        # train_data, train_labels = oversample_data(train_data, train_labels)
-    
-    # Debugging output after oversampling
-    print(f"Oversampled train_data shape: {train_data.shape}")
-    print(f"Oversampled train_labels shape: {train_labels.shape}")
+        # Oversample training data
+        train_data, train_labels = oversample_data(train_data, train_labels)
         
-        # # Debugging output after oversampling
-        # print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
-        # print(f"Fold {fold_id} oversampled train_labels shape: {train_labels.shape}")
+        # Debugging output after oversampling
+        print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
+        print(f"Fold {fold_id} oversampled train_labels shape: {train_labels.shape}")
 
-        # folds_data[fold_id] = [train_files, test_files]
+        folds_data[fold_id] = [train_files, test_files]
     #####################################################################################
-
-    # Store data in dictionaries for clarity
-    train_dict = {
-        'files': train_file_path,
-        'indices': train_indices,
-        'data': train_data,
-        'labels': train_labels
-    }
-    test_dict = {
-        'files': test_file_path,
-        'indices': test_indices,
-        'data': test_data,
-        'labels': test_labels
-    }
     
-    return train_test_paths
+    return folds_data
 
 
 def calc_class_weight(labels_count):

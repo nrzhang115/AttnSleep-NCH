@@ -7,10 +7,6 @@ class LoadDataset_from_numpy(Dataset):
     # Initialize your data, download, etc.
     def __init__(self, np_dataset):
         super(LoadDataset_from_numpy, self).__init__()
-        print(f"Loading dataset from: {np_dataset[0]}")  # Add this line for debugging
-        # # Ensure np_dataset is a list of file paths
-        # assert isinstance(np_dataset, list), "np_dataset should be a list of file paths"
-        # assert all(isinstance(file_path, str) for file_path in np_dataset), "Each item in np_dataset should be a string (file path)"
 
         # load files
         X_train = np.load(np_dataset[0])["x"]
@@ -19,8 +15,7 @@ class LoadDataset_from_numpy(Dataset):
         for np_file in np_dataset[1:]:
             X_train = np.vstack((X_train, np.load(np_file)["x"]))
             y_train = np.append(y_train, np.load(np_file)["y"])
-            
-        # Convert to PyTorch tensors
+
         self.len = X_train.shape[0]
         self.x_data = torch.from_numpy(X_train)
         self.y_data = torch.from_numpy(y_train).long()
@@ -39,10 +34,9 @@ class LoadDataset_from_numpy(Dataset):
         return self.len
 
 
-def data_generator_np(train_file_path, test_file_path, batch_size):
-
-    train_dataset = LoadDataset_from_numpy(train_file_path)
-    test_dataset = LoadDataset_from_numpy(test_file_path)
+def data_generator_np(training_files, subject_files, batch_size):
+    train_dataset = LoadDataset_from_numpy(training_files)
+    test_dataset = LoadDataset_from_numpy(subject_files)
 
     # to calculate the ratio for the CAL
     all_ys = np.concatenate((train_dataset.y_data, test_dataset.y_data))

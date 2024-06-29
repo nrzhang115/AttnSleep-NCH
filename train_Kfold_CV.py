@@ -50,14 +50,15 @@ def main(config, fold_id):
 
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
 
-    #print(fold_id)
-    # print('fold0:')
-    # print(folds_data[0][1])
-    # print('fold1:')
-    # print(folds_data[1][1])
+    print(fold_id)
+    print('fold0:')
+    print(folds_data[0][1])
+    print('fold1:')
+    print(folds_data[1][1])
     # Load data for the specified fold_id
-    train_test_paths = load_folds_data(args2.np_data_dir)
-    data_loader, valid_data_loader, data_count = data_generator_np(train_test_paths[0], train_test_paths[1], batch_size)
+    
+    data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0],
+                                                                   folds_data[fold_id][1], batch_size)
     print()
     weights_for_each_class = calc_class_weight(data_count)
 
@@ -94,7 +95,7 @@ if __name__ == '__main__':
     if "shhs" in args2.np_data_dir:
         folds_data = load_folds_data_shhs(args2.np_data_dir, config["data_loader"]["args"]["num_folds"])
     else:
-        folds_data = load_folds_data(args2.np_data_dir)
+        folds_data = load_folds_data(args2.np_data_dir, config["data_loader"]["args"]["num_folds"])
 
 
     main(config, fold_id)
