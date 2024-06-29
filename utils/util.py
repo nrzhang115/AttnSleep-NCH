@@ -74,7 +74,7 @@ def load_folds_data(np_data_path, n_folds):
 
     files_dict = dict()
 
-    files_pairs = [[files[0],files[10],files[11],files[12]], [files[12],files[14],files[15],files[16]]]
+    files_pairs = [[files[0],files[10],files[11],files[12]], [files[13],files[14],files[15],files[16]]]
     file_pair = []
     '''for i in range(n_folds * 32):
         file_pair.append(files[i])
@@ -92,6 +92,7 @@ def load_folds_data(np_data_path, n_folds):
         subject_files = train_files[fold_id]
         subject_files = [item for sublist in subject_files for item in sublist]
         files_pairs2 = [item for sublist in files_pairs for item in sublist]
+        # Determine training files by excluding subject_files
         training_files = list(set(files_pairs2) - set(subject_files))
         
         # Debugging prints
