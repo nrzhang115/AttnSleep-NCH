@@ -62,7 +62,7 @@ def load_folds_data(np_data_path, n_folds):
 
     files_dict = dict()
 
-    files_pairs = [[files[0],files[10],files[11],files[12]], [files[13],files[14],files[15],files[16]]]
+    files_pairs = [[files[0]], [files[0]]]
     file_pair = []
     '''for i in range(n_folds * 32):
         file_pair.append(files[i])
@@ -117,6 +117,7 @@ def load_folds_data(np_data_path, n_folds):
 
         # Oversample training data
         train_data, train_labels = oversample_data(train_data, train_labels)
+        test_data, test_labels = oversample_data(test_data, test_labels)
         
         # Debugging output after oversampling
         print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
