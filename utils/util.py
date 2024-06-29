@@ -62,7 +62,7 @@ def load_folds_data(np_data_path, n_folds):
 
     files_dict = dict()
 
-    files_pairs = [[files[0]], [files[0]]]
+    files_pairs = [[files[0]], [files[1]]]
     file_pair = []
     '''for i in range(n_folds * 32):
         file_pair.append(files[i])
