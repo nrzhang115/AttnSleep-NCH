@@ -40,8 +40,8 @@ class LoadDataset_from_numpy(Dataset):
 
 
 def data_generator_np(train_dict, test_dict, batch_size):
-    train_dataset = LoadDataset_from_numpy(train_dict)
-    test_dataset = LoadDataset_from_numpy(test_dict)
+    train_dataset = LoadDataset_from_numpy(train_dict['files'])
+    test_dataset = LoadDataset_from_numpy(test_dict['files'])
 
     # to calculate the ratio for the CAL
     all_ys = np.concatenate((train_dataset.y_data, test_dataset.y_data))
