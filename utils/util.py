@@ -109,9 +109,7 @@ def load_folds_data(np_data_path):
     np.random.shuffle(indices)
     train_indices = indices[:train_samples]
     test_indices = indices[train_samples:]
-    # Create training and testing file paths
-    train_files = file_to_use
-    test_files = file_to_use
+    
     
     # Create training and testing data and labels
     train_data = np.load(file_to_use)['x'][train_indices]
@@ -132,8 +130,8 @@ def load_folds_data(np_data_path):
     print(f"Train file path: {train_file_path}")
     print(f"Test file path: {test_file_path}")
     
-    folds_data = [train_file_path,test_file_path]
-    print(f"Folds data: {folds_data}")
+    train_test_paths = [train_file_path,test_file_path]
+    print(f"Folds data: {train_test_paths}")
     # # Load data from .npz files and apply oversampling
     # def load_data_from_files(files):
     #     data_list = []
@@ -183,7 +181,7 @@ def load_folds_data(np_data_path):
         'labels': test_labels
     }
     
-    return folds_data
+    return train_test_paths
 
 
 def calc_class_weight(labels_count):
