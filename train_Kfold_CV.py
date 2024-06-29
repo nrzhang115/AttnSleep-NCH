@@ -1,6 +1,7 @@
 import argparse
 import collections
 import numpy as np
+from pathlib import Path
 
 from data_loader.data_loaders import *
 import model.loss as module_loss
@@ -56,7 +57,7 @@ def main(config, fold_id):
     # print(folds_data[1][1])
     # Load data for the specified fold_id
     
-    train_dict, test_dict = load_folds_data(np_data_path, n_folds)
+    train_dict, test_dict = load_folds_data(args2.np_data_dir)
     
     data_loader, valid_data_loader, data_count = data_generator_np(train_dict, test_dict, batch_size)
     print()

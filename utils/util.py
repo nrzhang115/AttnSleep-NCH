@@ -58,7 +58,7 @@ def oversample_data(data, labels):
 
 ############################################################################
 
-def load_folds_data(np_data_path, n_folds):
+def load_folds_data(np_data_path):
     # Loads all .npz files from the specified directory
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
 
