@@ -7,7 +7,7 @@ class LoadDataset_from_numpy(Dataset):
     # Initialize your data, download, etc.
     def __init__(self, np_dataset):
         super(LoadDataset_from_numpy, self).__init__()
-        
+        print(f"Loading dataset from: {np_dataset[0]}")  # Add this line for debugging
         # # Ensure np_dataset is a list of file paths
         # assert isinstance(np_dataset, list), "np_dataset should be a list of file paths"
         # assert all(isinstance(file_path, str) for file_path in np_dataset), "Each item in np_dataset should be a string (file path)"
