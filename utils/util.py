@@ -133,6 +133,7 @@ def load_folds_data(np_data_path):
     print(f"Test file path: {test_file_path}")
     
     folds_data = [train_file_path,test_file_path]
+    print(f"Folds data: {folds_data}")
     # # Load data from .npz files and apply oversampling
     # def load_data_from_files(files):
     #     data_list = []
