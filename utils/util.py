@@ -109,6 +109,9 @@ def load_folds_data(np_data_path, n_folds):
     np.random.shuffle(indices)
     train_indices = indices[:train_samples]
     test_indices = indices[train_samples:]
+    # Create training and testing file paths
+    train_files = [file_to_use] * len(train_indices)
+    test_files = [file_to_use] * len(test_indices)
     
     # Create training and testing data and labels
     train_data = np.load(file_to_use)['x'][train_indices]
@@ -117,17 +120,17 @@ def load_folds_data(np_data_path, n_folds):
     test_labels = np.load(file_to_use)['y'][test_indices]
     
     
-    # Load data from .npz files and apply oversampling
-    def load_data_from_files(files):
-        data_list = []
-        labels_list = []
-        for file in files:
-            with np.load(file) as npzfile:
-                data_list.append(npzfile['x'])
-                labels_list.append(npzfile['y'])
-        data = np.concatenate(data_list, axis=0)
-        labels = np.concatenate(labels_list, axis=0)
-        return data, labels
+    # # Load data from .npz files and apply oversampling
+    # def load_data_from_files(files):
+    #     data_list = []
+    #     labels_list = []
+    #     for file in files:
+    #         with np.load(file) as npzfile:
+    #             data_list.append(npzfile['x'])
+    #             labels_list.append(npzfile['y'])
+    #     data = np.concatenate(data_list, axis=0)
+    #     labels = np.concatenate(labels_list, axis=0)
+    #     return data, labels
 
     # for fold_id in folds_data:
     #     train_files, test_files = folds_data[fold_id]
@@ -153,7 +156,21 @@ def load_folds_data(np_data_path, n_folds):
         # folds_data[fold_id] = [train_files, test_files]
     #####################################################################################
 
-    return [train_data, train_labels], [test_data, test_labels]
+    # Store data in dictionaries for clarity
+    train_dict = {
+        'files': train_files,
+        'indices': train_indices,
+        'data': train_data,
+        'labels': train_labels
+    }
+    test_dict = {
+        'files': test_files,
+        'indices': test_indices,
+        'data': test_data,
+        'labels': test_labels
+    }
+    
+    return train_dict, test_dict
 
 
 def calc_class_weight(labels_count):
