@@ -129,7 +129,7 @@ def load_folds_data(np_data_path):
     np.savez(train_file_path, x=train_data, y=train_labels)
     np.savez(test_file_path, x=test_data, y=test_labels)
     
-    
+    folds_data = [train_file_path,test_file_path]
     # # Load data from .npz files and apply oversampling
     # def load_data_from_files(files):
     #     data_list = []
@@ -179,7 +179,7 @@ def load_folds_data(np_data_path):
         'labels': test_labels
     }
     
-    return train_file_path, test_file_path
+    return folds_data
 
 
 def calc_class_weight(labels_count):

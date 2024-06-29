@@ -8,9 +8,9 @@ class LoadDataset_from_numpy(Dataset):
     def __init__(self, np_dataset):
         super(LoadDataset_from_numpy, self).__init__()
         
-        # Ensure np_dataset is a list of file paths
-        assert isinstance(np_dataset, list), "np_dataset should be a list of file paths"
-        assert all(isinstance(file_path, str) for file_path in np_dataset), "Each item in np_dataset should be a string (file path)"
+        # # Ensure np_dataset is a list of file paths
+        # assert isinstance(np_dataset, list), "np_dataset should be a list of file paths"
+        # assert all(isinstance(file_path, str) for file_path in np_dataset), "Each item in np_dataset should be a string (file path)"
 
         # load files
         X_train = np.load(np_dataset[0])["x"]
