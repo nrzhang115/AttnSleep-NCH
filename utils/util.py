@@ -97,6 +97,7 @@ def load_folds_data(np_data_path):
     #     folds_data[fold_id] = [training_files, subject_files]
     ############################################################################
     # Pick the file for training and testing 
+    print(files)
     file_to_use = files[0]
     
     # Determine split indices for training and testing

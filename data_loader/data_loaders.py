@@ -40,8 +40,7 @@ class LoadDataset_from_numpy(Dataset):
 
 
 def data_generator_np(train_file_path, test_file_path, batch_size):
-    print(f"Training file path: {train_file_path}")
-    print(f"Testing file path: {test_file_path}")
+
     train_dataset = LoadDataset_from_numpy(train_file_path)
     test_dataset = LoadDataset_from_numpy(test_file_path)
 
