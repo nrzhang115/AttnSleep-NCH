@@ -51,14 +51,15 @@ def main(config, fold_id):
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
 
     #print(fold_id)
-    print('fold0:')
-    print(folds_data[0][1])
-    print('fold1:')
-    print(folds_data[1][1])
+    # print('fold0:')
+    # print(folds_data[0][1])
+    # print('fold1:')
+    # print(folds_data[1][1])
 
 
-    data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0],
-                                                                   folds_data[fold_id][1], batch_size)
+    data_loader, valid_data_loader, data_count = data_generator_np(train_data_dict['files'], 
+                                                                   train_data_dict['indices'],
+                                                                   batch_size)
     print()
     weights_for_each_class = calc_class_weight(data_count)
 
