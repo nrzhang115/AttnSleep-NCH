@@ -110,14 +110,24 @@ def load_folds_data(np_data_path):
     train_indices = indices[:train_samples]
     test_indices = indices[train_samples:]
     # Create training and testing file paths
-    train_files = [file_to_use] * len(train_indices)
-    test_files = [file_to_use] * len(test_indices)
+    train_files = file_to_use
+    test_files = file_to_use
     
     # Create training and testing data and labels
     train_data = np.load(file_to_use)['x'][train_indices]
     train_labels = np.load(file_to_use)['y'][train_indices]
     test_data = np.load(file_to_use)['x'][test_indices]
     test_labels = np.load(file_to_use)['y'][test_indices]
+    
+    # Perform oversampling on training data
+    train_data, train_labels = oversample_data(train_data, train_labels)
+    
+    # Save data to new files (you can adjust the file paths as needed)
+    train_file_path = os.path.join(np_data_path, "train_data.npz")
+    test_file_path = os.path.join(np_data_path, "test_data.npz")
+    
+    np.savez(train_file_path, x=train_data, y=train_labels)
+    np.savez(test_file_path, x=test_data, y=test_labels)
     
     
     # # Load data from .npz files and apply oversampling
@@ -143,8 +153,7 @@ def load_folds_data(np_data_path):
 
         # # Oversample training data
         # train_data, train_labels = oversample_data(train_data, train_labels)
-    # Perform oversampling on training data
-    train_data, train_labels = oversample_data(train_data, train_labels)
+    
     # Debugging output after oversampling
     print(f"Oversampled train_data shape: {train_data.shape}")
     print(f"Oversampled train_labels shape: {train_labels.shape}")
@@ -158,13 +167,13 @@ def load_folds_data(np_data_path):
 
     # Store data in dictionaries for clarity
     train_dict = {
-        'files': train_files,
+        'files': train_file_path,
         'indices': train_indices,
         'data': train_data,
         'labels': train_labels
     }
     test_dict = {
-        'files': test_files,
+        'files': test_file_path,
         'indices': test_indices,
         'data': test_data,
         'labels': test_labels
