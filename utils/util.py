@@ -92,6 +92,13 @@ def load_folds_data(np_data_path, n_folds):
         subject_files = [item for sublist in subject_files for item in sublist]
         files_pairs2 = [item for sublist in files_pairs for item in sublist]
         training_files = list(set(files_pairs2) - set(subject_files))
+        
+        # Print debug information
+        print(f"Fold {fold_id + 1}:")
+        print(f"Training files count: {len(training_files)}")
+        print(f"Testing/Validation files count: {len(subject_files)}")
+        print(f"Total files: {len(training_files) + len(subject_files)}")
+        
         folds_data[fold_id] = [training_files, subject_files]
     ############################################################################
     # Load data from .npz files and apply oversampling
