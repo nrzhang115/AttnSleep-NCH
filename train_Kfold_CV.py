@@ -9,7 +9,6 @@ import model.model as module_arch
 from parse_config import ConfigParser
 from trainer import Trainer
 from utils.util import *
-
 import torch
 import torch.nn as nn
 
@@ -56,6 +55,8 @@ def main(config, fold_id):
     # print('fold1:')
     # print(folds_data[1][1])
     # Load data for the specified fold_id
+    
+    train_dict, test_dict = load_folds_data(np_data_path, n_folds)
     
     data_loader, valid_data_loader, data_count = data_generator_np(train_dict, test_dict, batch_size)
     print()
