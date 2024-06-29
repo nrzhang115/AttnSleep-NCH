@@ -89,7 +89,7 @@ if __name__ == '__main__':
     
     config = ConfigParser.from_args(args, fold_id, options)
     if "shhs" in args2.np_data_dir:
-        folds_data = load_folds_data_shhs(args2.np_data_dir)
+        folds_data = load_folds_data_shhs(args2.np_data_dir, config["data_loader"]["args"]["num_folds"])
     else:
         # config["data_loader"]["args"]["num_folds"]
         folds_data = load_folds_data(args2.np_data_dir)
