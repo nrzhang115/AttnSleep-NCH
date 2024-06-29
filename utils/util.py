@@ -57,18 +57,19 @@ def oversample_data(data, labels):
 ############################################################################
 
 def load_folds_data(np_data_path, n_folds):
+    # Loads all .npz files from the specified directory
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
 
-    if "78" in np_data_path:
-        r_p_path = r"utils/r_permute_78.npy"
+    # if "78" in np_data_path:
+    #     r_p_path = r"utils/r_permute_78.npy"
 
-    else:
-        r_p_path = r"utils/r_permute_20.npy"
+    # else:
+    #     r_p_path = r"utils/r_permute_20.npy"
 
-    if os.path.exists(r_p_path):
-        r_permute = np.load(r_p_path)
-    else:
-        print ("============== ERROR =================")
+    # if os.path.exists(r_p_path):
+    #     r_permute = np.load(r_p_path)
+    # else:
+    #     print ("============== ERROR =================")
 
 
     files_dict = dict()
@@ -93,11 +94,15 @@ def load_folds_data(np_data_path, n_folds):
         files_pairs2 = [item for sublist in files_pairs for item in sublist]
         training_files = list(set(files_pairs2) - set(subject_files))
         
-        # Print debug information
-        print(f"Fold {fold_id + 1}:")
+        # Debugging prints
+        print(f"Fold {fold_id + 1} - Files pairs:")
+        print(subject_files)
+        print(training_files)
         print(f"Training files count: {len(training_files)}")
         print(f"Testing/Validation files count: {len(subject_files)}")
         print(f"Total files: {len(training_files) + len(subject_files)}")
+        print("=" * 40)
+
         
         folds_data[fold_id] = [training_files, subject_files]
     ############################################################################
