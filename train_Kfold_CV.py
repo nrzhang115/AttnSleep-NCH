@@ -57,9 +57,9 @@ def main(config, fold_id):
     # print(folds_data[1][1])
     # Load data for the specified fold_id
     
-    train_dict, test_dict = load_folds_data(args2.np_data_dir)
+    train_file_path, test_file_path = load_folds_data(args2.np_data_dir)
     
-    data_loader, valid_data_loader, data_count = data_generator_np(train_dict, test_dict, batch_size)
+    data_loader, valid_data_loader, data_count = data_generator_np(train_file_path, test_file_path, batch_size)
     print()
     weights_for_each_class = calc_class_weight(data_count)
 

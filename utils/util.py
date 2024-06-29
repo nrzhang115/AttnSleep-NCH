@@ -179,7 +179,7 @@ def load_folds_data(np_data_path):
         'labels': test_labels
     }
     
-    return train_dict, test_dict
+    return train_file_path, test_file_path
 
 
 def calc_class_weight(labels_count):
