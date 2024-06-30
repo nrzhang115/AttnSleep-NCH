@@ -94,9 +94,9 @@ class Trainer(BaseTrainer):
         self.model.eval()
         self.valid_metrics.reset()
         #######################################################
-        # Check which class was not predicted 
-        all_preds = []
-        all_targets = []
+        # Resetting the accumulators for each epoch
+        # all_preds = []
+        # all_targets = []
         #######################################################
         with torch.no_grad():
             outs = np.array([])
@@ -111,9 +111,9 @@ class Trainer(BaseTrainer):
                     self.valid_metrics.update(met.__name__, met(output, target))
                 ##################################################   
                 # Collect predictions and targets
-                preds = torch.argmax(output, dim=1)
-                all_preds.extend(preds.cpu().numpy())
-                all_targets.extend(target.cpu().numpy())
+                # preds = torch.argmax(output, dim=1)
+                # all_preds.extend(preds.cpu().numpy())
+                # all_targets.extend(target.cpu().numpy())
                 ##################################################
                 preds_ = output.data.max(1, keepdim=True)[1].cpu()
 
@@ -121,8 +121,8 @@ class Trainer(BaseTrainer):
                 trgs = np.append(trgs, target.data.cpu().numpy())
         ########################################################################
         # Log prediction distribution for validation
-        print(f"Validation Prediction Distribution: {np.bincount(all_preds)}")
-        print(f"Validation Target Distribution: {np.bincount(all_targets)}")
+        print(f"Validation Prediction Distribution: {np.bincount(np.array(outs))}")
+        print(f"Validation Target Distribution: {np.bincount(np.array(trgs))}")
         ########################################################################
         
         return self.valid_metrics.result(), outs, trgs
