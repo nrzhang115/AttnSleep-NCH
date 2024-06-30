@@ -52,9 +52,9 @@ def main(config, fold_id):
 
     print(fold_id)
     print('fold0:')
-    print(folds_data[0][1])
+    print(folds_data[0][0])
     print('fold1:')
-    print(folds_data[1][1])
+    print(folds_data[1][0])
     # Load data for the specified fold_id
     
     data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0],
