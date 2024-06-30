@@ -206,10 +206,11 @@ class BaseTrainer:
             for i in range(len(outs_list)):
                 outs = np.load(outs_list[i])
                 trgs = np.load(trgs_list[i])
-                # Debug code
-                print(f"Loaded {len(outs)} outs and {len(trgs)} trgs from {outs_list[i]} and {trgs_list[i]}")
                 all_outs.extend(outs)
                 all_trgs.extend(trgs)
+        # Debug code
+        print("Total predictions gathered:", len(all_outs))
+        print("Total targets gathered:", len(all_trgs))
 
         all_trgs = np.array(all_trgs).astype(int)
         all_outs = np.array(all_outs).astype(int)
