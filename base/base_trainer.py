@@ -209,8 +209,8 @@ class BaseTrainer:
                 all_outs.extend(outs)
                 all_trgs.extend(trgs)
         # Debug code
-        print("Total predictions gathered:", all_outs.shape)
-        print("Total targets gathered:", all_trgs.shape)
+        print("Total predictions gathered:", len(all_outs))
+        print("Total targets gathered:", len(all_trgs))
 
         all_trgs = np.array(all_trgs).astype(int)
         all_outs = np.array(all_outs).astype(int)
