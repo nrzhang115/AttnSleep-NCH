@@ -35,14 +35,23 @@ class LoadDataset_from_numpy(Dataset):
 
 
 def data_generator_np(training_files, subject_files, batch_size):
+    print(f"Loading training data from: {training_files}")
+    print(f"Loading testing data from: {subject_files}")
+    
     train_dataset = LoadDataset_from_numpy(training_files)
     test_dataset = LoadDataset_from_numpy(subject_files)
+    # Print shapes to debug
+    print(f"Train dataset size: {train_dataset.len}, Test dataset size: {test_dataset.len}")
+
 
     # to calculate the ratio for the CAL
     all_ys = np.concatenate((train_dataset.y_data, test_dataset.y_data))
     all_ys = all_ys.tolist()
     num_classes = len(np.unique(all_ys))
     counts = [all_ys.count(i) for i in range(num_classes)]
+    
+    print(f"Combined class distribution: {np.bincount(all_ys)}")
+
 
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
                                                batch_size=batch_size,
