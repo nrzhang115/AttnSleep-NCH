@@ -138,12 +138,10 @@ class Trainer(BaseTrainer):
                 all_preds.extend(preds.cpu().numpy())
                 all_targets.extend(target.cpu().numpy())
                 ##################################################
-                # preds_ = output.data.max(1, keepdim=True)[1].cpu()
+                preds_ = output.data.max(1, keepdim=True)[1].cpu()
 
-                # outs = np.append(outs, preds_.cpu().numpy())
-                # trgs = np.append(trgs, target.data.cpu().numpy())
-                outs.extend(preds.cpu().numpy())
-                trgs.extend(target.cpu().numpy())
+                outs = np.append(outs, preds_.cpu().numpy())
+                trgs = np.append(trgs, target.data.cpu().numpy())
             print(f"Actual validation iterations in epoch {epoch}: {actual_iterations}")
         ########################################################################
         # Log prediction distribution for validation
