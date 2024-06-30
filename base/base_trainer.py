@@ -209,13 +209,18 @@ class BaseTrainer:
                 all_outs.extend(outs)
                 all_trgs.extend(trgs)
         # Debug code
-        print("Total predictions gathered:", len(all_outs))
-        print("Total targets gathered:", len(all_trgs))
+        print("Total predictions gathered:", all_outs.shape)
+        print("Total targets gathered:", all_trgs.shape)
 
         all_trgs = np.array(all_trgs).astype(int)
         all_outs = np.array(all_outs).astype(int)
+        # Print out classification report
+        print(classification_report(all_trgs, all_outs, digits=6))
 
         r = classification_report(all_trgs, all_outs, digits=6, output_dict=True)
+        
+        
+        
         cm = confusion_matrix(all_trgs, all_outs)
         df = pd.DataFrame(r)
         df["cohen"] = cohen_kappa_score(all_trgs, all_outs)
