@@ -129,18 +129,10 @@ class Trainer(BaseTrainer):
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 loss = self.criterion(output, target, self.class_weights, self.device)
-                
-                # Debug: Print out loss and batch size
-                print(f"Batch {batch_idx}: Loss={loss.item()}, Batch size={data.size(0)}")
 
                 self.valid_metrics.update('loss', loss.item())
                 for met in self.metric_ftns:
-                    
-                    metric_value = met(output, target)
-                    
                     self.valid_metrics.update(met.__name__, met(output, target))
-                    # Debug: Print out metric values
-                    print(f"Batch {batch_idx}: Metric {met.__name__}={metric_value}")
                 ##################################################   
                 # Collect predictions and targets
                 preds = torch.argmax(output, dim=1)
