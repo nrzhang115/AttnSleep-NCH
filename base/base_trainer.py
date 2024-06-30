@@ -214,6 +214,7 @@ class BaseTrainer:
 
         all_trgs = np.array(all_trgs).astype(int)
         all_outs = np.array(all_outs).astype(int)
+        
         # Print out classification report
         print(classification_report(all_trgs, all_outs, digits=6))
 
