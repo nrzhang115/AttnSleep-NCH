@@ -120,7 +120,8 @@ def load_folds_data(np_data_path, n_folds):
         train_labels = np.load(file_to_use)['y'][train_indices]
         test_data = np.load(file_to_use)['x'][test_indices]
         test_labels = np.load(file_to_use)['y'][test_indices]
-        
+        print(f"Training set before oversampling: {train_data.shape}")
+        print(f"Testing set before oversampling: {test_data.shape}")
         
         for fold_id in range(n_folds):
             # Perform oversampling on training data
