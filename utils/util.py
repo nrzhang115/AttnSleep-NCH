@@ -92,49 +92,58 @@ def load_folds_data(np_data_path, n_folds):
     #     print(f"Total files: {len(training_files) + len(subject_files)}")
     #     print("=" * 40)
     # Pick the file for training and testing 
-    print(files)
     file_to_use = files[0]
-    
-    # Determine split indices for training and testing
-    total_samples = len(np.load(file_to_use)['x'])
-    train_samples = int(0.7 * total_samples)
-    test_samples = total_samples - train_samples
-    
-    # Split data indices
-    indices = np.arange(total_samples)
-    np.random.shuffle(indices)
-    train_indices = indices[:train_samples]
-    test_indices = indices[train_samples:]
-    
-    
-    # Create training and testing data and labels
-    train_data = np.load(file_to_use)['x'][train_indices]
-    train_labels = np.load(file_to_use)['y'][train_indices]
-    test_data = np.load(file_to_use)['x'][test_indices]
-    test_labels = np.load(file_to_use)['y'][test_indices]
-    
-    for fold_id in range(n_folds):
-        # Perform oversampling on training data
-        train_data, train_labels = oversample_data(train_data, train_labels)
-        test_data, test_labels = oversample_data(test_data, test_labels)
-        # Debugging output after oversampling
-        print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
-        print(f"Fold {fold_id} oversampled train_labels shape: {train_labels.shape}")
+    print(f"Initial file to use: {file_to_use}")  # Debug: Print initial file to use
+    # Verify the file path and its contents just before loading
+    if not os.path.exists(file_to_use):
+        print("Error: File does not exist", file_to_use)
+    else:
+        print("Loading original data from:", file_to_use)
         
-        # Save data to new files (you can adjust the file paths as needed)
-        train_file_path = os.path.join(np_data_path, "train_data.npz")
-        test_file_path = os.path.join(np_data_path, "test_data.npz")
+    try:
+    
+        # Determine split indices for training and testing
+        total_samples = len(np.load(file_to_use)['x'])
+        train_samples = int(0.7 * total_samples)
+        test_samples = total_samples - train_samples
         
-        np.savez(train_file_path, x=train_data, y=train_labels)
-        np.savez(test_file_path, x=test_data, y=test_labels)
+        # Split data indices
+        indices = np.arange(total_samples)
+        np.random.shuffle(indices)
+        train_indices = indices[:train_samples]
+        test_indices = indices[train_samples:]
         
-        print(f"Train file path: {train_file_path}")
-        print(f"Test file path: {test_file_path}")
         
-        train_test_paths = [train_file_path,test_file_path]
-        print(f"Folds data: {train_test_paths}")
+        # Create training and testing data and labels
+        train_data = np.load(file_to_use)['x'][train_indices]
+        train_labels = np.load(file_to_use)['y'][train_indices]
+        test_data = np.load(file_to_use)['x'][test_indices]
+        test_labels = np.load(file_to_use)['y'][test_indices]
         
-        folds_data[fold_id] = [train_file_path, test_file_path]
+        for fold_id in range(n_folds):
+            # Perform oversampling on training data
+            train_data, train_labels = oversample_data(train_data, train_labels)
+            test_data, test_labels = oversample_data(test_data, test_labels)
+            # Debugging output after oversampling
+            print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
+            print(f"Fold {fold_id} oversampled train_labels shape: {train_labels.shape}")
+            
+            # Save data to new files (you can adjust the file paths as needed)
+            train_file_path = os.path.join(np_data_path, "train_data.npz")
+            test_file_path = os.path.join(np_data_path, "test_data.npz")
+            
+            np.savez(train_file_path, x=train_data, y=train_labels)
+            np.savez(test_file_path, x=test_data, y=test_labels)
+            
+            print(f"Train file path: {train_file_path}")
+            print(f"Test file path: {test_file_path}")
+            
+            train_test_paths = [train_file_path,test_file_path]
+            print(f"Folds data: {train_test_paths}")
+            
+            folds_data[fold_id] = [train_file_path, test_file_path]
+    except Exception as e:
+        print(f"Error loading data: {e}")
     ###########################################################################
     # # Load data from .npz files and apply oversampling
     # def load_data_from_files(files):
