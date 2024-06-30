@@ -226,7 +226,12 @@ class BaseTrainer:
         df = pd.DataFrame(r)
         df["cohen"] = cohen_kappa_score(all_trgs, all_outs)
         df["accuracy"] = accuracy_score(all_trgs, all_outs)
-        df = df * 100
+        
+        # The multiplication operation below is intended to 
+        # convert proportions or ratios into percentages for readability in the report
+        # but it will also be applied to supports 
+        # df = df * 100
+        
         file_name = self.config["name"] + "_classification_report.xlsx"
         report_Save_path = os.path.join(save_dir, file_name)
         df.to_excel(report_Save_path)
