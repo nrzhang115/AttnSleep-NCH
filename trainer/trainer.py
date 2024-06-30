@@ -27,6 +27,21 @@ class Trainer(BaseTrainer):
         self.fold_id = fold_id
         self.selected = 0
         self.class_weights = class_weights
+        ##########################################################
+        # Calculate expected iterations per epoch
+        self.expected_train_iterations = len(self.data_loader.dataset) // self.data_loader.batch_size
+        if len(self.data_loader.dataset) % self.data_loader.batch_size != 0:
+            self.expected_train_iterations += 1
+
+        if self.do_validation:
+            self.expected_valid_iterations = len(self.valid_data_loader.dataset) // self.valid_data_loader.batch_size
+            if len(self.valid_data_loader.dataset) % self.valid_data_loader.batch_size != 0:
+                self.expected_valid_iterations += 1
+
+        print(f"Expected train iterations per epoch: {self.expected_train_iterations}")
+        if self.do_validation:
+            print(f"Expected validation iterations per epoch: {self.expected_valid_iterations}")
+        ##################################################################################################
 
     def _train_epoch(self, epoch, total_epochs):
         """
@@ -40,7 +55,11 @@ class Trainer(BaseTrainer):
         self.train_metrics.reset()
         overall_outs = []
         overall_trgs = []
+        
+        actual_iterations = 0
+        
         for batch_idx, (data, target) in enumerate(self.data_loader):
+            actual_iterations += 1
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
@@ -64,6 +83,8 @@ class Trainer(BaseTrainer):
 
             if batch_idx == self.len_epoch:
                 break
+            
+        print(f"Actual train iterations in epoch {epoch}: {actual_iterations}")
         log = self.train_metrics.result()
 
         if self.do_validation:
@@ -95,13 +116,15 @@ class Trainer(BaseTrainer):
         self.valid_metrics.reset()
         #######################################################
         # Resetting the accumulators for each epoch
-        # all_preds = []
-        # all_targets = []
+        all_preds = []
+        all_targets = []
+        actual_iterations = 0
         #######################################################
         with torch.no_grad():
             outs = np.array([])
             trgs = np.array([])
             for batch_idx, (data, target) in enumerate(self.valid_data_loader):
+                actual_iterations += 1
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 loss = self.criterion(output, target, self.class_weights, self.device)
@@ -111,18 +134,22 @@ class Trainer(BaseTrainer):
                     self.valid_metrics.update(met.__name__, met(output, target))
                 ##################################################   
                 # Collect predictions and targets
-                # preds = torch.argmax(output, dim=1)
-                # all_preds.extend(preds.cpu().numpy())
-                # all_targets.extend(target.cpu().numpy())
+                preds = torch.argmax(output, dim=1)
+                all_preds.extend(preds.cpu().numpy())
+                all_targets.extend(target.cpu().numpy())
                 ##################################################
-                preds_ = output.data.max(1, keepdim=True)[1].cpu()
+                # preds_ = output.data.max(1, keepdim=True)[1].cpu()
 
-                outs = np.append(outs, preds_.cpu().numpy())
-                trgs = np.append(trgs, target.data.cpu().numpy())
+                # outs = np.append(outs, preds_.cpu().numpy())
+                # trgs = np.append(trgs, target.data.cpu().numpy())
+                outs.extend(preds.cpu().numpy())
+                trgs.extend(target.cpu().numpy())
+            print(f"Actual validation iterations in epoch {epoch}: {actual_iterations}")
         ########################################################################
         # Log prediction distribution for validation
-        print(f"Validation Prediction Distribution: {np.bincount(np.array(outs))}")
-        print(f"Validation Target Distribution: {np.bincount(np.array(trgs))}")
+        print(f"After Validation Epoch {epoch}:")
+        print(f"Validation Prediction Distribution: {np.bincount(all_preds)}")
+        print(f"Validation Target Distribution: {np.bincount(all_targets)}")
         ########################################################################
         
         return self.valid_metrics.result(), outs, trgs
