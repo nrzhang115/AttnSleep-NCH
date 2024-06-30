@@ -9,8 +9,12 @@ class LoadDataset_from_numpy(Dataset):
         super(LoadDataset_from_numpy, self).__init__()
 
         # load files
-        print("Received np_dataset:", np_dataset)
-        print("Attempting to load (data_loader):", np_dataset[0])
+        # np_dataset must be a list 
+        
+        # # Debug code
+        # print("Received np_dataset:", np_dataset)
+        # print("Attempting to load (data_loader):", np_dataset[0])
+        
         X_train = np.load(np_dataset[0])["x"]
         y_train = np.load(np_dataset[0])["y"]
 
@@ -37,9 +41,12 @@ class LoadDataset_from_numpy(Dataset):
 
 
 def data_generator_np(training_files, subject_files, batch_size):
-    print(f"Loading training data from: {training_files}, Type: {type(training_files)}")
-    print(f"Loading testing data from: {subject_files}, Type: {type(training_files)}")
-    # Force the paths to be lists if they are not
+    # # Debug code
+    # print(f"Loading training data from: {training_files}, Type: {type(training_files)}")
+    # print(f"Loading testing data from: {subject_files}, Type: {type(training_files)}")
+    
+    # The paths are now strings instead of lists
+    # Force the paths to be lists
     if not isinstance(training_files, list):
         training_files = [training_files]
     if not isinstance(subject_files, list):

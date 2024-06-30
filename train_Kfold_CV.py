@@ -52,16 +52,17 @@ def main(config, fold_id):
 
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
 
-    print(fold_id)
-    print('fold0:')
-    print(folds_data[0][1])
-    print('fold1:')
-    print(folds_data[0][1])
-    # Load data for the specified fold_id
-    print("Folds Data for fold_id", fold_id, ":", folds_data[fold_id])
-    print(f"Using fold ID: {fold_id}")
+    # print(fold_id)
+    # print('fold0:')
+    # print(folds_data[0][1])
+    # print('fold1:')
+    # print(folds_data[0][1])
+    # # Load data for the specified fold_id
+    # print("Folds Data for fold_id", fold_id, ":", folds_data[fold_id])
+    # print(f"Using fold ID: {fold_id}")
     print("Training files train_Kfold_CV:", folds_data[fold_id][0])
     print("Testing files train_Kfold_CV:", folds_data[fold_id][1])
+    
     if not os.path.isfile(folds_data[fold_id][0]):
         raise Exception(f"Training data path is not a file: {folds_data[fold_id][0]}")
     if not os.path.isfile(folds_data[fold_id][1]):

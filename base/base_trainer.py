@@ -195,34 +195,38 @@ class BaseTrainer:
         outs_list = []
         trgs_list = []
         save_dir = os.path.abspath(os.path.join(self.checkpoint_dir, os.pardir))
-        print(save_dir)
         for root, dirs, files in os.walk(save_dir):
             for file in files:
                 if "outs" in file:
-                     outs_list.append(os.path.join(root, file))
+                    outs_list.append(os.path.join(root, file))
                 if "trgs" in file:
-                     trgs_list.append(os.path.join(root, file))
+                    trgs_list.append(os.path.join(root, file))
 
         if len(outs_list)==self.config["data_loader"]["args"]["num_folds"]:
             for i in range(len(outs_list)):
                 outs = np.load(outs_list[i])
                 trgs = np.load(trgs_list[i])
-                trgs = np.array(trgs).astype(int)
-                outs = np.array(outs).astype(int)
-                r = classification_report(trgs, outs, digits=6, output_dict=True)
-                cm = confusion_matrix(trgs, outs)
-                df = pd.DataFrame(r)
-                df["cohen"] = cohen_kappa_score(trgs, outs)
-                df["accuracy"] = accuracy_score(trgs, outs)
-                df = df * 100
-                i_str = str(i)
-                file_name = self.config["name"] + "_classification_report" + i_str + ".xlsx"
-                report_Save_path = os.path.join(save_dir, file_name)
-                df.to_excel(report_Save_path)
+                # Debug code
+                print(f"Loaded {len(outs)} outs and {len(trgs)} trgs from {outs_list[i]} and {trgs_list[i]}")
+                all_outs.extend(outs)
+                all_trgs.extend(trgs)
 
-                cm_file_name = self.config["name"] + "_confusion_matrix.torch"
-                cm_Save_path = os.path.join(save_dir, cm_file_name)
-                torch.save(cm, cm_Save_path)
+        all_trgs = np.array(all_trgs).astype(int)
+        all_outs = np.array(all_outs).astype(int)
+
+        r = classification_report(all_trgs, all_outs, digits=6, output_dict=True)
+        cm = confusion_matrix(all_trgs, all_outs)
+        df = pd.DataFrame(r)
+        df["cohen"] = cohen_kappa_score(all_trgs, all_outs)
+        df["accuracy"] = accuracy_score(all_trgs, all_outs)
+        df = df * 100
+        file_name = self.config["name"] + "_classification_report.xlsx"
+        report_Save_path = os.path.join(save_dir, file_name)
+        df.to_excel(report_Save_path)
+
+        cm_file_name = self.config["name"] + "_confusion_matrix.torch"
+        cm_Save_path = os.path.join(save_dir, cm_file_name)
+        torch.save(cm, cm_Save_path)
 
 
 

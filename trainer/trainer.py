@@ -27,21 +27,6 @@ class Trainer(BaseTrainer):
         self.fold_id = fold_id
         self.selected = 0
         self.class_weights = class_weights
-        ##########################################################
-        # Calculate expected iterations per epoch
-        self.expected_train_iterations = len(self.data_loader.dataset) // self.data_loader.batch_size
-        if len(self.data_loader.dataset) % self.data_loader.batch_size != 0:
-            self.expected_train_iterations += 1
-
-        if self.do_validation:
-            self.expected_valid_iterations = len(self.valid_data_loader.dataset) // self.valid_data_loader.batch_size
-            if len(self.valid_data_loader.dataset) % self.valid_data_loader.batch_size != 0:
-                self.expected_valid_iterations += 1
-
-        print(f"Expected train iterations per epoch: {self.expected_train_iterations}")
-        if self.do_validation:
-            print(f"Expected validation iterations per epoch: {self.expected_valid_iterations}")
-        ##################################################################################################
 
     def _train_epoch(self, epoch, total_epochs):
         """
@@ -56,10 +41,8 @@ class Trainer(BaseTrainer):
         overall_outs = []
         overall_trgs = []
         
-        actual_iterations = 0
         
         for batch_idx, (data, target) in enumerate(self.data_loader):
-            actual_iterations += 1
             data, target = data.to(self.device), target.to(self.device)
 
             self.optimizer.zero_grad()
@@ -84,7 +67,6 @@ class Trainer(BaseTrainer):
             if batch_idx == self.len_epoch:
                 break
             
-        print(f"Actual train iterations in epoch {epoch}: {actual_iterations}")
         log = self.train_metrics.result()
 
         if self.do_validation:
@@ -119,13 +101,11 @@ class Trainer(BaseTrainer):
         # Resetting the accumulators for each epoch
         all_preds = []
         all_targets = []
-        actual_iterations = 0
         #######################################################
         with torch.no_grad():
             outs = np.array([])
             trgs = np.array([])
             for batch_idx, (data, target) in enumerate(self.valid_data_loader):
-                actual_iterations += 1
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 loss = self.criterion(output, target, self.class_weights, self.device)
@@ -143,7 +123,6 @@ class Trainer(BaseTrainer):
 
                 outs = np.append(outs, preds_.cpu().numpy())
                 trgs = np.append(trgs, target.data.cpu().numpy())
-            print(f"Actual validation iterations in epoch {epoch}: {actual_iterations}")
         ########################################################################
         # Log prediction distribution for validation
         print(f"After Validation Epoch {epoch}:")
