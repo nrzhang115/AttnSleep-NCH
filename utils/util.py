@@ -104,6 +104,7 @@ def load_folds_data(np_data_path, n_folds):
     
         # Determine split indices for training and testing
         total_samples = len(np.load(file_to_use)['x'])
+        print(f"Total labels in the files: {total_samples}")
         train_samples = int(0.7 * total_samples)
         test_samples = total_samples - train_samples
         
@@ -119,6 +120,7 @@ def load_folds_data(np_data_path, n_folds):
         train_labels = np.load(file_to_use)['y'][train_indices]
         test_data = np.load(file_to_use)['x'][test_indices]
         test_labels = np.load(file_to_use)['y'][test_indices]
+        
         
         for fold_id in range(n_folds):
             # Perform oversampling on training data
