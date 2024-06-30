@@ -13,6 +13,8 @@ from utils.util import *
 import torch
 import torch.nn as nn
 
+import os
+
 # fix random seeds for reproducibility
 SEED = 123
 torch.manual_seed(SEED)
@@ -56,6 +58,14 @@ def main(config, fold_id):
     print('fold1:')
     print(folds_data[0][1])
     # Load data for the specified fold_id
+    print("Folds Data for fold_id", fold_id, ":", folds_data[fold_id])
+    print(f"Using fold ID: {fold_id}")
+    print("Training files train_Kfold_CV:", folds_data[fold_id][0])
+    print("Testing files train_Kfold_CV:", folds_data[fold_id][1])
+    if not os.path.isfile(folds_data[fold_id][0]):
+        raise Exception(f"Training data path is not a file: {folds_data[fold_id][0]}")
+    if not os.path.isfile(folds_data[fold_id][1]):
+        raise Exception(f"Testing data path is not a file: {folds_data[fold_id][1]}")
     
     data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0],
                                                                    folds_data[fold_id][1], batch_size)
