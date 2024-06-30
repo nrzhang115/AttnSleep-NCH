@@ -9,6 +9,7 @@ class LoadDataset_from_numpy(Dataset):
         super(LoadDataset_from_numpy, self).__init__()
 
         # load files
+        print("Attempting to load:", np_dataset[0])
         X_train = np.load(np_dataset[0])["x"]
         y_train = np.load(np_dataset[0])["y"]
 
