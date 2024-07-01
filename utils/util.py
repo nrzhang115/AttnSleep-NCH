@@ -59,7 +59,8 @@ def load_folds_data_shhs(np_data_path, n_folds):
 def load_folds_data(np_data_path, n_folds):
     # Loads all .npz files from the specified directory
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
-
+    
+    # # Cross Validation 
     # files_dict = dict()
 
     # files_pairs = [[files[0]], [files[1]]]
@@ -92,8 +93,9 @@ def load_folds_data(np_data_path, n_folds):
     #     print(f"Total files: {len(training_files) + len(subject_files)}")
     #     print("=" * 40)
     # Pick the file for training and testing 
+    
     file_to_use = files[0]
-    print(f"Initial file to use: {file_to_use}")  # Debug: Print initial file to use
+    
     # Verify the file path and its contents just before loading
     if not os.path.exists(file_to_use):
         print("Error: File does not exist", file_to_use)
@@ -133,7 +135,7 @@ def load_folds_data(np_data_path, n_folds):
             # print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
             # print(f"Fold {fold_id} oversampled test_data shape: {test_data.shape}")
             
-            # Save data to new files (you can adjust the file paths as needed)
+            # Save data to new file paths
             train_file_path = os.path.join(np_data_path, "train_data.npz")
             test_file_path = os.path.join(np_data_path, "test_data.npz")
             
@@ -150,7 +152,7 @@ def load_folds_data(np_data_path, n_folds):
     except Exception as e:
         print(f"Error loading data: {e}")
     ###########################################################################
-    # # Load data from .npz files and apply oversampling
+    # # Load data from .npz files and apply oversampling (For cross validation only)
     # def load_data_from_files(files):
     #     data_list = []
     #     labels_list = []
@@ -200,11 +202,12 @@ def calc_class_weight(labels_count):
 
     # #############################################################################
     # Without Oversampling 
-    factor = 1 / (num_classes)
-    mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] # THESE CONFIGS ARE FOR SLEEP-EDF-20 ONLY
     # Adjust the class weight to address class imbalance.
+    factor = 1 / (num_classes)
+    mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] 
+    
     # mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
-    # mu = [factor] * num_classes
+    # mu = [factor] * num_classes # if oversampling was applied
 
     
     # Debug Info

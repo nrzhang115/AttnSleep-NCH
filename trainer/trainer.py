@@ -36,12 +36,14 @@ class Trainer(BaseTrainer):
                total_epochs: Integer, the total number of epoch
         :return: A log that contains average loss and metric in this epoch.
         """
+        # Sets the model to training mode
         self.model.train()
+        # Resets tracking for metrics at the start of an epoch
         self.train_metrics.reset()
         overall_outs = []
         overall_trgs = []
         
-        
+        # Loops through each batch of data from data_loader.py 
         for batch_idx, (data, target) in enumerate(self.data_loader):
             data, target = data.to(self.device), target.to(self.device)
 

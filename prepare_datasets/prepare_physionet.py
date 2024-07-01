@@ -100,7 +100,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/srv/scratch/speechdata/sleep_data/NCH",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg_all/C4-M1",
+    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg_apnea/C4-M1",
                         help="Directory where to save numpy files outputs.")
     parser.add_argument("--select_ch", type=str, default="EEG C4-M1",
                         help="The selected channel")
