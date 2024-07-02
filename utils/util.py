@@ -22,22 +22,6 @@ def load_folds_data_shhs(np_data_path, n_folds):
         folds_data[fold_id] = [training_files, subject_files]
     return folds_data
 
-# Perform undersample for class 6 (Majority class)
-def undersample_indices(labels, target_class=6, undersample_factor=10):
-    """Returns indices after undersampling the majority class."""
-    unique, counts = np.unique(labels, return_counts=True)
-    target_count_majority = min(counts) * undersample_factor  # Adjust factor as needed
-
-    undersampled_indices = []
-    for class_value in unique:
-        class_indices = np.where(labels == class_value)[0]
-        if class_value == target_class:
-            np.random.shuffle(class_indices)
-            class_indices = class_indices[:target_count_majority]  # Reduce to target count
-        undersampled_indices.extend(class_indices)
-
-    np.random.shuffle(undersampled_indices)  # Shuffle to mix classes well
-    return undersampled_indices
 
 def load_folds_data(np_data_path, n_folds):
     # Loads all .npz files from the specified directory
@@ -47,9 +31,6 @@ def load_folds_data(np_data_path, n_folds):
     
     file_to_use = files[0]
     
-    data = np.load(file_to_use)['x']
-    labels = np.load(file_to_use)['y']
-    
     # Verify the file path and its contents just before loading
     if not os.path.exists(file_to_use):
         print("Error: File does not exist", file_to_use)
@@ -57,14 +38,9 @@ def load_folds_data(np_data_path, n_folds):
         print("Loading original data from:", file_to_use)
         
     try:
-        
-        
-        # Use the undersampling function to get the right indices
-        undersampled_indices = undersample_indices(labels)
-        undersampled_data = data[undersampled_indices]
-        undersampled_labels = labels[undersampled_indices]
-        
-        total_samples = len(undersampled_labels)
+    
+        # Determine split indices for training and testing
+        total_samples = len(np.load(file_to_use)['x'])
         print(f"Total labels in the files: {total_samples}")
         train_samples = int(0.7 * total_samples)
         test_samples = total_samples - train_samples
@@ -75,14 +51,15 @@ def load_folds_data(np_data_path, n_folds):
         train_indices = indices[:train_samples]
         test_indices = indices[train_samples:]
         
+        
         # Create training and testing data and labels
-        train_data = undersampled_data[train_indices]
-        train_labels = undersampled_labels[train_indices]
-        test_data = undersampled_data[test_indices]
-        test_labels = undersampled_labels[test_indices]
+        train_data = np.load(file_to_use)['x'][train_indices]
+        train_labels = np.load(file_to_use)['y'][train_indices]
+        test_data = np.load(file_to_use)['x'][test_indices]
+        test_labels = np.load(file_to_use)['y'][test_indices]
         print(f"Training set shape: {train_data.shape}")
         print(f"Testing set data shape: {test_data.shape}")
-            
+        
         for fold_id in range(n_folds):
             
             # Save data to new file paths
@@ -116,16 +93,16 @@ def calc_class_weight(labels_count):
     print(f"Number of Classes: {num_classes}")
     print(f"Labels Count: {labels_count}")
 
-    # Calculate proportional inverse to guide the mu adjustment
-    proportions = labels_count / total
-    inverse_proportions = 1 / proportions
-    normalized_mu = inverse_proportions / np.sum(inverse_proportions) * num_classes  # Normalize and scale by number of classes
+    # Without Oversampling 
+    # Adjust the class weight to address class imbalance.
+    factor = 1 / (num_classes)
+    # mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] 
+    
+    mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
 
-    # Adjust mu based on specific needs
-    mu = normalized_mu * np.array([0.5, 2.5, 3.0, 2.5, 1.5, 3.5, 1.0])
-
+    
     # Debug Info
-    print(f"Mu: {mu}")
+    # print(f"Mu: {mu}")
     
     for key in range(num_classes):
         score = math.log(mu[key] * total / float(labels_count[key]))
