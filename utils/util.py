@@ -112,6 +112,7 @@ def calc_class_weight(labels_count):
         class_weight[key] = round(class_weight[key] * mu[key], 2)
 
     class_weight = np.array([class_weight[i] for i in range(num_classes)], dtype=np.float32)
+    class_weights = class_weights / np.max(class_weights)
     
     
     print(f"Mu: {class_weight}")
