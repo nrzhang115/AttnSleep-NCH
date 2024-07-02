@@ -107,23 +107,35 @@ def load_folds_data(np_data_path, n_folds):
 
 def calc_class_weight(labels_count):
     
-    # Calculate class distribution and total number of samples
-    unique, counts = np.unique(labels_count, return_counts=True)
-    total = np.sum(counts)
-    num_classes = len(unique)
+    # Without Oversampling
+    total = np.sum(labels_count)
+    class_weight = dict()
+    num_classes = len(labels_count)
+    # Debugging information
     print(f"Total: {total}")
     print(f"Number of Classes: {num_classes}")
-    print(f"Labels Count: {dict(zip(unique, counts))}")
+    print(f"Labels Count: {labels_count}")
 
-    # Adjust the class weight to address class imbalance
-    class_weight = dict()
-    # Calculate weights based on inverse frequency normalized by the number of classes
-    for label, count in zip(unique, counts):
-        # Here we calculate weight as the inverse of the proportion of the class
-        class_weight[label] = total / (num_classes * count)
+    # Calculate proportional inverse to guide the mu adjustment
+    proportions = labels_count / total
+    inverse_proportions = 1 / proportions
+    normalized_mu = inverse_proportions / np.sum(inverse_proportions) * num_classes  # Normalize and scale by number of classes
 
-    print(f"Class weight: {class_weight}")
+    # Adjust mu based on specific needs
+    mu = normalized_mu * np.array([0.5, 2.5, 3.0, 2.5, 1.5, 3.5, 1.0])
 
+    # Debug Info
+    print(f"Mu: {mu}")
+    
+    for key in range(num_classes):
+        score = math.log(mu[key] * total / float(labels_count[key]))
+        class_weight[key] = score if score > 1.0 else 1.0
+        class_weight[key] = round(class_weight[key] * mu[key], 2)
+
+    class_weight = [class_weight[i] for i in range(num_classes)]
+    
+    
+    print(f"Mu: {class_weight}")
     return class_weight
 
 
