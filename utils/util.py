@@ -47,8 +47,8 @@ def load_folds_data(np_data_path, n_folds):
     
     file_to_use = files[0]
     
-    data = loaded_data['x']
-    labels = loaded_data['y']
+    data = np.load(file_to_use)['x']
+    labels = np.load(file_to_use)['y']
     
     # Verify the file path and its contents just before loading
     if not os.path.exists(file_to_use):
