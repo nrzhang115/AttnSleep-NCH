@@ -22,6 +22,22 @@ def load_folds_data_shhs(np_data_path, n_folds):
         folds_data[fold_id] = [training_files, subject_files]
     return folds_data
 
+# Perform undersample for class 6 (Majority class)
+def undersample_indices(labels, target_class=6, undersample_factor=10):
+    """Returns indices after undersampling the majority class."""
+    unique, counts = np.unique(labels, return_counts=True)
+    target_count_majority = min(counts) * undersample_factor  # Adjust factor as needed
+
+    undersampled_indices = []
+    for class_value in unique:
+        class_indices = np.where(labels == class_value)[0]
+        if class_value == target_class:
+            np.random.shuffle(class_indices)
+            class_indices = class_indices[:target_count_majority]  # Reduce to target count
+        undersampled_indices.extend(class_indices)
+
+    np.random.shuffle(undersampled_indices)  # Shuffle to mix classes well
+    return undersampled_indices
 
 def load_folds_data(np_data_path, n_folds):
     # Loads all .npz files from the specified directory
@@ -31,6 +47,9 @@ def load_folds_data(np_data_path, n_folds):
     
     file_to_use = files[0]
     
+    data = loaded_data['x']
+    labels = loaded_data['y']
+    
     # Verify the file path and its contents just before loading
     if not os.path.exists(file_to_use):
         print("Error: File does not exist", file_to_use)
@@ -38,9 +57,14 @@ def load_folds_data(np_data_path, n_folds):
         print("Loading original data from:", file_to_use)
         
     try:
-    
-        # Determine split indices for training and testing
-        total_samples = len(np.load(file_to_use)['x'])
+        
+        
+        # Use the undersampling function to get the right indices
+        undersampled_indices = undersample_indices(labels)
+        undersampled_data = data[undersampled_indices]
+        undersampled_labels = labels[undersampled_indices]
+        
+        total_samples = len(undersampled_labels)
         print(f"Total labels in the files: {total_samples}")
         train_samples = int(0.7 * total_samples)
         test_samples = total_samples - train_samples
@@ -51,15 +75,14 @@ def load_folds_data(np_data_path, n_folds):
         train_indices = indices[:train_samples]
         test_indices = indices[train_samples:]
         
-        
         # Create training and testing data and labels
-        train_data = np.load(file_to_use)['x'][train_indices]
-        train_labels = np.load(file_to_use)['y'][train_indices]
-        test_data = np.load(file_to_use)['x'][test_indices]
-        test_labels = np.load(file_to_use)['y'][test_indices]
+        train_data = undersampled_data[train_indices]
+        train_labels = undersampled_labels[train_indices]
+        test_data = undersampled_data[test_indices]
+        test_labels = undersampled_labels[test_indices]
         print(f"Training set shape: {train_data.shape}")
         print(f"Testing set data shape: {test_data.shape}")
-        
+            
         for fold_id in range(n_folds):
             
             # Save data to new file paths
@@ -84,34 +107,23 @@ def load_folds_data(np_data_path, n_folds):
 
 def calc_class_weight(labels_count):
     
-    # Without Oversampling
-    total = np.sum(labels_count)
-    class_weight = dict()
-    num_classes = len(labels_count)
-    # Debugging information
+    # Calculate class distribution and total number of samples
+    unique, counts = np.unique(labels_count, return_counts=True)
+    total = np.sum(counts)
+    num_classes = len(unique)
     print(f"Total: {total}")
     print(f"Number of Classes: {num_classes}")
-    print(f"Labels Count: {labels_count}")
+    print(f"Labels Count: {dict(zip(unique, counts))}")
 
-    # Without Oversampling 
-    # Adjust the class weight to address class imbalance.
-    factor = 1 / (num_classes)
-    # mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] 
-    
-    # mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
-    mu = [0.03, 0.89, 1.90, 1.69, 0.32, 4.00, 0.10]
-    # Debug Info
-    # print(f"Mu: {mu}")
-    
-    for key in range(num_classes):
-        score = math.log(mu[key] * total / float(labels_count[key]))
-        class_weight[key] = score if score > 1.0 else 1.0
-        class_weight[key] = round(class_weight[key] * mu[key], 2)
+    # Adjust the class weight to address class imbalance
+    class_weight = dict()
+    # Calculate weights based on inverse frequency normalized by the number of classes
+    for label, count in zip(unique, counts):
+        # Here we calculate weight as the inverse of the proportion of the class
+        class_weight[label] = total / (num_classes * count)
 
-    class_weight = [class_weight[i] for i in range(num_classes)]
-    
-    
     print(f"Class weight: {class_weight}")
+
     return class_weight
 
 
