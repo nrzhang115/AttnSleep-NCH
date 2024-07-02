@@ -8,7 +8,6 @@ import numpy as np
 from glob import glob
 import math
 from scipy.signal import resample
-from imblearn.over_sampling import SMOTE
 
 def load_folds_data_shhs(np_data_path, n_folds):
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
@@ -26,22 +25,35 @@ def load_folds_data_shhs(np_data_path, n_folds):
 ####################################################################
 #  Oversampling to handle data imbalance 
 def oversample_data(data, labels):
-    # Reshape data from (samples, time_steps, features) to (samples, time_steps*features)
-    # data is in the shape (num_samples, 3000, 1)
-    nsamples, nx, ny = data.shape
-    data_2d = data.reshape((nsamples, nx*ny))
+    unique, counts = np.unique(labels, return_counts=True)
+    max_count = np.max(counts)
     
-    smote = SMOTE()
-    data_resampled, labels_resampled = smote.fit_resample(data_2d, labels)
+    oversampled_data = []
+    oversampled_labels = []
     
-    # Reshape data back to (samples, time_steps, features)
-    data_resampled = data_resampled.reshape((-1, nx, ny))
+    for label in unique:
+        class_data = data[labels == label]
+        num_to_add = max_count - len(class_data)
+        
+        if num_to_add == 0:
+            oversampled_data.append(class_data)
+            oversampled_labels.extend([label] * len(class_data))
+        else:
+            oversampled_class_data = np.tile(class_data, (num_to_add // len(class_data) + 1, 1, 1))
+            oversampled_class_data = oversampled_class_data[:num_to_add]
+            
+            oversampled_data.append(np.concatenate((class_data, oversampled_class_data), axis=0))
+            oversampled_labels.extend([label] * (len(class_data) + num_to_add))
     
+    oversampled_data = np.concatenate(oversampled_data, axis=0)
+    oversampled_labels = np.array(oversampled_labels)
+    
+    indices = np.arange(len(oversampled_labels))
+    np.random.shuffle(indices)
     # Debugging output to verify class distribution
-    unique, counts = np.unique(labels_resampled, return_counts=True)
-    print("Class distribution after SMOTE:", dict(zip(unique, counts)))
+    print("Class distribution after oversampling:", np.bincount(oversampled_labels))
     
-    return data_resampled, labels_resampled
+    return oversampled_data[indices], oversampled_labels[indices]
 ############################################################################
 
 def load_folds_data(np_data_path, n_folds):
@@ -50,7 +62,6 @@ def load_folds_data(np_data_path, n_folds):
     
     folds_data = {}
     
-    # Cuztomise file_to_use
     file_to_use = files[1]
     
     # Verify the file path and its contents just before loading
@@ -87,8 +98,10 @@ def load_folds_data(np_data_path, n_folds):
         for fold_id in range(n_folds):
             # Perform oversampling on training data
             train_data, train_labels = oversample_data(train_data, train_labels)
+            test_data, test_labels = oversample_data(test_data, test_labels)
             # Debugging output after oversampling
             print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
+            print(f"Fold {fold_id} oversampled test_data shape: {test_data.shape}")
             
             # Save data to new file paths
             train_file_path = os.path.join(np_data_path, "train_data.npz")
@@ -111,27 +124,10 @@ def load_folds_data(np_data_path, n_folds):
 
 
 def calc_class_weight(labels_count):
-    # Already applied oversampling
+    # Already applied oversampling 
     num_classes = len(labels_count)
     class_weight = [1.0] * num_classes
-
-    # Print current class distribution
-    print(f"Class distribution: {labels_count}")
     print(f"Number of Classes: {num_classes}")
-
-    # Calculate total instances for normalization
-    total = sum(labels_count)
-    
-    # # Calculate weights inversely proportional to class frequencies
-    # for i in range(num_classes):
-    #     class_weight[i] = total / (num_classes * labels_count[i])
-
-    # Adjust weights manually to emphasize importance of classes 0-5 more
-    # [0.4, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    adjustment_factor = [0.45, 0.7, 0.7, 0.7, 0.5, 0.9, 1.2]  # Increase for first 6, decrease for class 6
-    class_weight = [w * adj for w, adj in zip(class_weight, adjustment_factor)]
-    class_weight = [float(w * adj) for w, adj in zip(class_weight, adjustment_factor)]
-    print(f"Calculated class weights: {class_weight}")
 
     return class_weight
 
