@@ -8,6 +8,7 @@ import numpy as np
 from glob import glob
 import math
 from scipy.signal import resample
+from imblearn.over_sampling import SMOTE
 
 def load_folds_data_shhs(np_data_path, n_folds):
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
@@ -22,109 +23,91 @@ def load_folds_data_shhs(np_data_path, n_folds):
         folds_data[fold_id] = [training_files, subject_files]
     return folds_data
 
+####################################################################
+#  Oversampling to handle data imbalance 
+def oversample_data(data, labels):
+    smote = SMOTE()
+    data_resampled, labels_resampled = smote.fit_resample(data, labels)
+    
+    # Debugging output to verify class distribution
+    unique, counts = np.unique(labels_resampled, return_counts=True)
+    print("Class distribution after SMOTE:", dict(zip(unique, counts)))
+    
+    return data_resampled, labels_resampled
+
+############################################################################
 
 def load_folds_data(np_data_path, n_folds):
+    # Loads all .npz files from the specified directory
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
-    folds_data = {}
-
-    if not files:
-        raise FileNotFoundError("No .npz files found in the specified directory.")
-
-    # Load first file to get shapes and labels
-    file_to_use = np.load(files[0])
-    x, y = file_to_use['x'], file_to_use['y']
-
-    # Determine the number of instances per class and the minimum count to use for undersampling
-    unique_classes, counts = np.unique(y, return_counts=True)
-    min_count = np.min(counts)
     
-    print("Class distribution before undersampling:", dict(zip(unique_classes, counts)))
-    print("Minimum class size for undersampling:", min_count)
-
-    # Create indices for undersampling
-    undersampled_indices = np.hstack([np.random.choice(np.where(y == label)[0], min_count, replace=False)
-                                      for label in unique_classes])
-
-    # Shuffle the undersampled indices to mix classes
-    np.random.shuffle(undersampled_indices)
-    x = x[undersampled_indices]
-    y = y[undersampled_indices]
-    
-    total_samples = len(y)
-    indices = np.arange(total_samples)
-    np.random.shuffle(indices)
-
-    # Split data into folds
     folds_data = {}
-    for fold_id in range(n_folds):
-        fold_size = total_samples // n_folds
-        start = fold_id * fold_size
-        end = start + fold_size if fold_id < n_folds - 1 else total_samples
-
-        # Split indices for the current fold
-        fold_indices = indices[start:end]
-        fold_x = x[fold_indices]
-        fold_y = y[fold_indices]
-
-        # Further split the current fold into training and testing sets
-        train_samples = int(0.7 * len(fold_x))
-        train_indices = fold_indices[:train_samples]
-        test_indices = fold_indices[train_samples:]
-
-        train_data = x[train_indices]
-        train_labels = y[train_indices]
-        test_data = x[test_indices]
-        test_labels = y[test_indices]
-
-        # Save data to .npz files
-        train_file_path = os.path.join(np_data_path, f"train_data_fold{fold_id}.npz")
-        test_file_path = os.path.join(np_data_path, f"test_data_fold{fold_id}.npz")
+    
+    file_to_use = files[0]
+    
+    # Verify the file path and its contents just before loading
+    if not os.path.exists(file_to_use):
+        print("Error: File does not exist", file_to_use)
+    else:
+        print("Loading original data from:", file_to_use)
         
-        np.savez(train_file_path, x=train_data, y=train_labels)
-        np.savez(test_file_path, x=test_data, y=test_labels)
-
-        folds_data[fold_id] = [train_file_path, test_file_path]
+    try:
+    
+        # Determine split indices for training and testing
+        total_samples = len(np.load(file_to_use)['x'])
+        print(f"Total labels in the files: {total_samples}")
+        train_samples = int(0.7 * total_samples)
+        test_samples = total_samples - train_samples
         
-        print(f"Data for fold {fold_id} saved: Train at {train_file_path}, Test at {test_file_path}")
-        print(f"Training set shape: {train_data.shape}, Testing set data shape: {test_data.shape}")
+        # Split data indices
+        indices = np.arange(total_samples)
+        np.random.shuffle(indices)
+        train_indices = indices[:train_samples]
+        test_indices = indices[train_samples:]
+        
+        
+        # Create training and testing data and labels
+        train_data = np.load(file_to_use)['x'][train_indices]
+        train_labels = np.load(file_to_use)['y'][train_indices]
+        test_data = np.load(file_to_use)['x'][test_indices]
+        test_labels = np.load(file_to_use)['y'][test_indices]
+        print(f"Training set before oversampling: {train_data.shape}")
+        print(f"Testing set before oversampling: {test_data.shape}")
+        # print(f"Training set shape: {train_data.shape}")
+        # print(f"Testing set data shape: {test_data.shape}")
+        
+        for fold_id in range(n_folds):
+            # Perform oversampling on training data
+            train_data, train_labels = oversample_data(train_data, train_labels)
+            # Debugging output after oversampling
+            print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
+            
+            # Save data to new file paths
+            train_file_path = os.path.join(np_data_path, "train_data.npz")
+            test_file_path = os.path.join(np_data_path, "test_data.npz")
+            
+            np.savez(train_file_path, x=train_data, y=train_labels)
+            np.savez(test_file_path, x=test_data, y=test_labels)
+            
+            print(f"Train file path: {train_file_path}")
+            print(f"Test file path: {test_file_path}")
+            
+            train_test_paths = [train_file_path,test_file_path]
+            print(f"Folds data: {train_test_paths}")
+            
+            folds_data[fold_id] = [train_file_path, test_file_path]
+    except Exception as e:
+        print(f"Error loading data: {e}")
     
     return folds_data
 
 
 def calc_class_weight(labels_count):
-    
-    # Without Oversampling
-    total = np.sum(labels_count)
-    class_weight = dict()
+    # Already applied oversampling 
     num_classes = len(labels_count)
-    # Debugging information
-    print(f"Total: {total}")
+    class_weight = [1.0] * num_classes
     print(f"Number of Classes: {num_classes}")
-    print(f"Labels Count: {labels_count}")
 
-    # Calculate inverse proportion and normalize
-    proportions = labels_count / total
-    inverse_proportions = 1 / (proportions + 1e-8)  # Adding a small constant to avoid division by zero
-    class_weight = inverse_proportions / np.sum(inverse_proportions) * num_classes
-    class_weight = class_weight.astype(np.float32)
-    
-    # Apply manual adjustments based on empirical needs
-    # adjustments = np.array([0.8, 2.5, 3.5, 3.0, 1.7, 4, 0.1])
-    # mu = normalized_mu * adjustments
-    
-    # print(f"Mu: {mu}")
-    
-    # for key in range(num_classes):
-    #     # Using log to amplify the effect of very low values
-    #     score = math.log(mu[key] * total / float(labels_count[key]))
-    #     class_weight[key] = score if score > 1.0 else 1.0
-    #     # Multiplying by mu again to adjust the final weight based on mu
-    #     class_weight[key] = round(class_weight[key] * mu[key], 2)
-
-    # class_weight = np.array([class_weight[i] for i in range(num_classes)], dtype=np.float32)
-    
-    
-    print(f"Mu: {class_weight}")
     return class_weight
 
 
