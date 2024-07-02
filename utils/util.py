@@ -95,7 +95,7 @@ def calc_class_weight(labels_count):
 
     # Calculate inverse proportion and normalize
     proportions = labels_count / total
-    inverse_proportions = 1 / proportions
+    inverse_proportions = 1 / (proportions + 1e-8)  # Adding a small constant to avoid division by zero
     normalized_mu = inverse_proportions / np.sum(inverse_proportions) * num_classes
     
     # Apply manual adjustments based on empirical needs
@@ -112,7 +112,6 @@ def calc_class_weight(labels_count):
         class_weight[key] = round(class_weight[key] * mu[key], 2)
 
     class_weight = np.array([class_weight[i] for i in range(num_classes)], dtype=np.float32)
-    class_weights = class_weights / np.max(class_weights)
     
     
     print(f"Mu: {class_weight}")
