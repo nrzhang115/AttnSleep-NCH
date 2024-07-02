@@ -62,7 +62,7 @@ def load_folds_data(np_data_path, n_folds):
     
     folds_data = {}
     
-    file_to_use = files[1]
+    file_to_use = files[10]
     
     # Verify the file path and its contents just before loading
     if not os.path.exists(file_to_use):
@@ -90,8 +90,8 @@ def load_folds_data(np_data_path, n_folds):
         train_labels = np.load(file_to_use)['y'][train_indices]
         test_data = np.load(file_to_use)['x'][test_indices]
         test_labels = np.load(file_to_use)['y'][test_indices]
-        print(f"Training set before oversampling: {train_data.shape}")
-        print(f"Testing set before oversampling: {test_data.shape}")
+        print(f"Training set before oversampling:", np.bincount(train_labels))
+        print(f"Testing set before oversampling:", np.bincount(test_labels))
         # print(f"Training set shape: {train_data.shape}")
         # print(f"Testing set data shape: {test_data.shape}")
         
@@ -111,7 +111,7 @@ def load_folds_data(np_data_path, n_folds):
             print(f"Test file path: {test_file_path}")
             
             train_test_paths = [train_file_path,test_file_path]
-            print(f"Folds data: {train_test_paths}")
+            # print(f"Folds data: {train_test_paths}")
             
             folds_data[fold_id] = [train_file_path, test_file_path]
     except Exception as e:
