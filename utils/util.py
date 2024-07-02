@@ -99,8 +99,7 @@ def calc_class_weight(labels_count):
     # mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] 
     
     # mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
-    mu = [0.0034, 0.1011, 0.2149, 0.1910, 0.0367, 0.4525, 0.0003]
-    
+    mu = [0.03, 0.89, 1.90, 1.69, 0.32, 4.00, 0.10]
     # Debug Info
     # print(f"Mu: {mu}")
     
