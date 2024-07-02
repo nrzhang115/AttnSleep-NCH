@@ -26,15 +26,22 @@ def load_folds_data_shhs(np_data_path, n_folds):
 ####################################################################
 #  Oversampling to handle data imbalance 
 def oversample_data(data, labels):
+    # Reshape data from (samples, time_steps, features) to (samples, time_steps*features)
+    # data is in the shape (num_samples, 3000, 1)
+    nsamples, nx, ny = data.shape
+    data_2d = data.reshape((nsamples, nx*ny))
+    
     smote = SMOTE()
-    data_resampled, labels_resampled = smote.fit_resample(data, labels)
+    data_resampled, labels_resampled = smote.fit_resample(data_2d, labels)
+    
+    # Reshape data back to (samples, time_steps, features)
+    data_resampled = data_resampled.reshape((-1, nx, ny))
     
     # Debugging output to verify class distribution
     unique, counts = np.unique(labels_resampled, return_counts=True)
     print("Class distribution after SMOTE:", dict(zip(unique, counts)))
     
     return data_resampled, labels_resampled
-
 ############################################################################
 
 def load_folds_data(np_data_path, n_folds):
