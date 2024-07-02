@@ -93,20 +93,22 @@ def calc_class_weight(labels_count):
     print(f"Number of Classes: {num_classes}")
     print(f"Labels Count: {labels_count}")
 
-    # Without Oversampling 
-    # Adjust the class weight to address class imbalance.
-    factor = 1 / (num_classes)
-    # mu = [factor * 1.5, factor * 2, factor * 1.5, factor, factor * 1.5] 
+    # Calculate inverse proportion and normalize
+    proportions = labels_count / total
+    inverse_proportions = 1 / proportions
+    normalized_mu = inverse_proportions / np.sum(inverse_proportions) * num_classes
     
-    mu = [factor * 0.8, factor * 2.5, factor * 3.5, factor * 3.0, factor * 1.7, factor*4, factor*0.1]
-
+    # Apply manual adjustments based on empirical needs
+    adjustments = np.array([0.8, 2.5, 3.5, 3.0, 1.7, 4, 0.1])
+    mu = normalized_mu * adjustments
     
-    # Debug Info
-    # print(f"Mu: {mu}")
+    print(f"Mu: {mu}")
     
     for key in range(num_classes):
+        # Using log to amplify the effect of very low values
         score = math.log(mu[key] * total / float(labels_count[key]))
         class_weight[key] = score if score > 1.0 else 1.0
+        # Multiplying by mu again to adjust the final weight based on mu
         class_weight[key] = round(class_weight[key] * mu[key], 2)
 
     class_weight = [class_weight[i] for i in range(num_classes)]
