@@ -51,7 +51,7 @@ def load_folds_data(np_data_path, n_folds):
     folds_data = {}
     
     # Cuztomise file_to_use
-    file_to_use = files[10]
+    file_to_use = files[1]
     
     # Verify the file path and its contents just before loading
     if not os.path.exists(file_to_use):
