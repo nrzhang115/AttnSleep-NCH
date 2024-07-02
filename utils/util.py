@@ -106,6 +106,7 @@ def calc_class_weight(labels_count):
     proportions = labels_count / total
     inverse_proportions = 1 / (proportions + 1e-8)  # Adding a small constant to avoid division by zero
     class_weight = inverse_proportions / np.sum(inverse_proportions) * num_classes
+    class_weight = class_weight.astype(np.float32)
     
     # Apply manual adjustments based on empirical needs
     # adjustments = np.array([0.8, 2.5, 3.5, 3.0, 1.7, 4, 0.1])
