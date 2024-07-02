@@ -110,10 +110,26 @@ def load_folds_data(np_data_path, n_folds):
 
 
 def calc_class_weight(labels_count):
-    # Already applied oversampling 
+    # Already applied oversampling
     num_classes = len(labels_count)
     class_weight = [1.0] * num_classes
+
+    # Print current class distribution
+    print(f"Class distribution: {labels_count}")
     print(f"Number of Classes: {num_classes}")
+
+    # Calculate total instances for normalization
+    total = sum(labels_count)
+    
+    # # Calculate weights inversely proportional to class frequencies
+    # for i in range(num_classes):
+    #     class_weight[i] = total / (num_classes * labels_count[i])
+
+    # Adjust weights manually to emphasize importance of classes 0-5 more
+    adjustment_factor = [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 0.5]  # Increase for first 6, decrease for class 6
+    class_weight = [w * adj for w, adj in zip(class_weight, adjustment_factor)]
+    class_weight = [float(w * adj) for w, adj in zip(class_weight, adjustment_factor)]
+    print(f"Calculated class weights: {class_weight}")
 
     return class_weight
 
