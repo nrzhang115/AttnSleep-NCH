@@ -64,7 +64,8 @@ def data_generator_np(training_files, subject_files, batch_size):
     num_classes = len(np.unique(all_ys))
     counts = [all_ys.count(i) for i in range(num_classes)]
     
-    print(f"Combined class distribution: {np.bincount(all_ys)}")
+    # Debug code
+    # print(f"Combined class distribution: {np.bincount(all_ys)}")
 
 
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,

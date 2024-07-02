@@ -126,7 +126,7 @@ def calc_class_weight(labels_count):
     #     class_weight[i] = total / (num_classes * labels_count[i])
 
     # Adjust weights manually to emphasize importance of classes 0-5 more
-    adjustment_factor = [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 0.5]  # Increase for first 6, decrease for class 6
+    adjustment_factor = [5.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.2]  # Increase for first 6, decrease for class 6
     class_weight = [w * adj for w, adj in zip(class_weight, adjustment_factor)]
     class_weight = [float(w * adj) for w, adj in zip(class_weight, adjustment_factor)]
     print(f"Calculated class weights: {class_weight}")
