@@ -98,11 +98,8 @@ def load_folds_data(np_data_path, n_folds):
         for fold_id in range(n_folds):
             # Perform oversampling on training data
             train_data, train_labels = oversample_data(train_data, train_labels)
-            test_data, test_labels = oversample_data(test_data, test_labels)
             # Debugging output after oversampling
-            print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")
-            print(f"Fold {fold_id} oversampled test_data shape: {test_data.shape}")
-            
+            print(f"Fold {fold_id} oversampled train_data shape: {train_data.shape}")           
             # Save data to new file paths
             train_file_path = os.path.join(np_data_path, "train_data.npz")
             test_file_path = os.path.join(np_data_path, "test_data.npz")
