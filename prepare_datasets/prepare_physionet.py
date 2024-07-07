@@ -102,9 +102,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/srv/scratch/speechdata/sleep_data/NCH",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/apnea_binary/CZ-O1",
+    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/apnea_binary/O2-M1",
                         help="Directory where to save numpy files outputs.")
-    parser.add_argument("--select_ch", type=str, default="EEG CZ-O1",
+    parser.add_argument("--select_ch", type=str, default="EEG O2-M1",
                         help="The selected channel")
     # Initialise 10% of the dataset
     parser.add_argument("--percentage", type=int, default=10, 
