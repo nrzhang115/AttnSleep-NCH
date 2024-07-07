@@ -79,7 +79,8 @@ def contains_specified_events(annotations, event_dict):
 def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGET_SAMPLING_RATE):
     raw = load_study(name)
     current_sampling_rate = int(raw.info['sfreq'])
-    print(f"File: {name}, Original Sampling Rate: {current_sampling_rate} Hz")
+    print(f"File: {name}, Original Sampling Rate: {current_sampling_rate} Hz, Selected Channel: {select_ch}")
+    
 
     raw_ch_df = raw.to_data_frame(time_format=None)[select_ch]
     raw_ch_df = raw_ch_df.to_frame()
