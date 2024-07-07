@@ -115,7 +115,7 @@ def calc_class_weight(labels_count):
     # Already applied downsampling
     num_classes = len(labels_count)
     # class_weight = [1.0] * num_classes
-    class_weight = [1.5, 1.0]
+    class_weight = [3.0, 1.0]
     # print(f"Number of Classes: {num_classes}")
     print(f"Class weighting: {class_weight}")
 
