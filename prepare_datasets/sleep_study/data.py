@@ -113,8 +113,10 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
             data.append(interval_data)
             if duration >= 10:  # Preserve evnets lasting more than 10s
                 labels.append(label)
+                print(f"Event: {label}, Duration: {duration} seconds, Label: {label}")
             else:
-                labels.append(ss.info.EVENT_DICT["SHORT_EVENT"])  # Otherwise, label the event as SHORT_EVENT
+                labels.append("SHORT_EVENT")  # Otherwise, label the event as SHORT_EVENT
+                print(f"Short Event: {label}, Duration: {duration} seconds, Label: SHORT_EVENT")
 
     labels = np.array(labels)
     data = np.array(data)
