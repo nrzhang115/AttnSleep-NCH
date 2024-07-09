@@ -88,6 +88,8 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
 
     annotation_path = os.path.join(data_dir, name + '.tsv')
     df = pd.read_csv(annotation_path, sep='\t')
+    print(f"Annotations DataFrame for file {name} (after loading):")
+    print(df.head())  # Check the DataFrame structure and content
     annotations = mne.Annotations(df.onset, df.duration, df.description, orig_time=raw.info['meas_date'])
     raw.set_annotations(annotations)
 
@@ -95,6 +97,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
         return np.array([]), np.array([])  # Return empty arrays if no specified events are found
 
     events, _ = mne.events_from_annotations(raw, event_id=ss.info.EVENT_DICT)
+    print(f"Events extracted: {events}")
 
     labels = []
     data = []
