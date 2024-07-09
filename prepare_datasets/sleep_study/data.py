@@ -10,6 +10,7 @@ from scipy.signal import resample
 
 import sleep_study as ss
 
+
 EPOCH_SEC_SIZE = 30  # Define the epoch size in seconds
 TARGET_SAMPLING_RATE = ss.info.REFERENCE_FREQ   # The target sampling rate is defined in info.py
 study_list = None # Will be initialized after the module is initialized.
@@ -126,7 +127,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
                 labels.append(label)
                 print(f"Event: {label}, Duration: {duration} seconds, Label: {label}")
             else:
-                labels.append(info.ann2label["SHORT_EVENT"])  # Otherwise, label the event as SHORT_EVENT
+                labels.append(ss.info.ann2label["SHORT_EVENT"])  # Otherwise, label the event as SHORT_EVENT
                 # print(f"Short Event: {label}, Duration: {duration} seconds, Label: SHORT_EVENT")
 
     labels = np.array(labels)
