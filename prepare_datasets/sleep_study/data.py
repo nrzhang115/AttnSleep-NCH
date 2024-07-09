@@ -102,7 +102,16 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
     target_length = int(EPOCH_SEC_SIZE * target_sampling_rate)  # Ensure target length is integer
 
     for event in events:
-        onset, duration, label = event[[0, 1, 2]] # Include duration
+        onset, label = event[[0, 2]] # Include duration
+        # Find the corresponding duration from the DataFrame
+        duration = df.loc[np.isclose(df['onset'], onset / current_sampling_rate), 'duration']
+        
+        if not duration.empty:
+            # Convert duration to a scalar
+            duration = duration.values[0]
+        else:
+            duration = 0
+            
         print(f"Processing event: Onset: {onset}, Duration: {duration}, Label: {label}")
         indices = [int(onset), int(onset + EPOCH_SEC_SIZE * current_sampling_rate)]
         if indices[1] <= len(raw_ch_df):
@@ -117,7 +126,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
                 labels.append(label)
                 print(f"Event: {label}, Duration: {duration} seconds, Label: {label}")
             else:
-                labels.append("SHORT_EVENT")  # Otherwise, label the event as SHORT_EVENT
+                labels.append(info.ann2label["SHORT_EVENT"])  # Otherwise, label the event as SHORT_EVENT
                 # print(f"Short Event: {label}, Duration: {duration} seconds, Label: SHORT_EVENT")
 
     labels = np.array(labels)
