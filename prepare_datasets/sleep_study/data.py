@@ -87,9 +87,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
     raw_ch_df.set_index(np.arange(len(raw_ch_df)))
 
     annotation_path = os.path.join(data_dir, name + '.tsv')
-    df = pd.read_csv(annotation_path, sep='\t')
-    print(f"Annotations DataFrame for file {name} (after loading):")
-    print(df.head())  # Check the DataFrame structure and content
+    df = pd.read_csv(annotation_path, sep='\t', usecols=['onset', 'duration', 'description'])
     #annotations = mne.Annotations(df.onset, df.duration, df.description, orig_time=raw.info['meas_date'])
     annotations = mne.Annotations(onset=df['onset'].values, duration=df['duration'].values, description=df['description'].values, orig_time=raw.info['meas_date'])
     raw.set_annotations(annotations)
@@ -98,7 +96,6 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
         return np.array([]), np.array([])  # Return empty arrays if no specified events are found
 
     events, _ = mne.events_from_annotations(raw, event_id=ss.info.EVENT_DICT)
-    print(f"Events extracted: {events}")
 
     labels = []
     data = []
@@ -106,6 +103,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
 
     for event in events:
         onset, duration, label = event[[0, 1, 2]] # Include duration
+        print(f"Processing event: Onset: {onset}, Duration: {duration}, Label: {label}")
         indices = [int(onset), int(onset + EPOCH_SEC_SIZE * current_sampling_rate)]
         if indices[1] <= len(raw_ch_df):
             interval_data = raw_ch_df.iloc[indices[0]:indices[1]].values
