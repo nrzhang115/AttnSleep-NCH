@@ -120,7 +120,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
                 print(f"Event: {label}, Duration: {duration} seconds, Label: {label}")
             else:
                 labels.append("SHORT_EVENT")  # Otherwise, label the event as SHORT_EVENT
-                print(f"Short Event: {label}, Duration: {duration} seconds, Label: SHORT_EVENT")
+                # print(f"Short Event: {label}, Duration: {duration} seconds, Label: SHORT_EVENT")
 
     labels = np.array(labels)
     data = np.array(data)
