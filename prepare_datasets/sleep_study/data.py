@@ -101,7 +101,7 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
     target_length = int(EPOCH_SEC_SIZE * target_sampling_rate)  # Ensure target length is integer
 
     for event in events:
-        label, onset = event[[2, 0]]
+        label, onset, duration = event[[2, 0, 1]] # Include duration
         indices = [int(onset), int(onset + EPOCH_SEC_SIZE * current_sampling_rate)]
         if indices[1] <= len(raw_ch_df):
             interval_data = raw_ch_df.iloc[indices[0]:indices[1]].values
@@ -111,7 +111,10 @@ def get_raw_eeg_and_labels(name, data_dir, select_ch, target_sampling_rate=TARGE
                 interval_data = resample(interval_data, target_length)
 
             data.append(interval_data)
-            labels.append(label)
+            if duration >= 10:  # Preserve evnets lasting more than 10s
+                labels.append(label)
+            else:
+                labels.append(ss.info.EVENT_DICT["SHORT_EVENT"])  # Otherwise, label the event as SHORT_EVENT
 
     labels = np.array(labels)
     data = np.array(data)

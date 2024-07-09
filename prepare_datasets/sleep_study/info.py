@@ -24,7 +24,8 @@ EVENT_DICT = {
         'EEG Arousal': 1,
         'Oximeter Event': 1,
         'Move': 1,
-        'Limb Movement': 1
+        'Limb Movement': 1,
+        'SHORT_EVENT': 1 # Events less than 10s
         
         }
 
