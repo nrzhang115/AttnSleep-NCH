@@ -52,14 +52,7 @@ def main(config, fold_id):
 
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
 
-    # print(fold_id)
-    # print('fold0:')
-    # print(folds_data[0][1])
-    # print('fold1:')
-    # print(folds_data[0][1])
-    # # Load data for the specified fold_id
-    # print("Folds Data for fold_id", fold_id, ":", folds_data[fold_id])
-    # print(f"Using fold ID: {fold_id}")
+   
     print("Training files train_Kfold_CV:", folds_data[fold_id][0])
     print("Testing files train_Kfold_CV:", folds_data[fold_id][1])
     
@@ -70,7 +63,7 @@ def main(config, fold_id):
     
     data_loader, valid_data_loader, data_count = data_generator_np(folds_data[fold_id][0],
                                                                    folds_data[fold_id][1], batch_size)
-    print()
+    
     weights_for_each_class = calc_class_weight(data_count)
 
     trainer = Trainer(model, criterion, metrics, optimizer,
