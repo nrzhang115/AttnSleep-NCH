@@ -23,30 +23,61 @@ def load_folds_data_shhs(np_data_path, n_folds):
     return folds_data
 
 ####################################################################
-# Downsampling the majority class
-def downsample_data(data, labels):
-    unique, counts = np.unique(labels, return_counts=True)
-    minority_class = unique[np.argmin(counts)]
-    majority_class = unique[np.argmax(counts)]
+# # Downsampling the majority class
+# def downsample_data(data, labels):
+#     unique, counts = np.unique(labels, return_counts=True)
+#     minority_class = unique[np.argmin(counts)]
+#     majority_class = unique[np.argmax(counts)]
     
-    minority_class_data = data[labels == minority_class]
-    majority_class_data = data[labels == majority_class]
+#     minority_class_data = data[labels == minority_class]
+#     majority_class_data = data[labels == majority_class]
     
-    num_to_select = len(minority_class_data)
-    selected_indices = np.random.choice(len(majority_class_data), num_to_select, replace=False)
-    downsampled_majority_class_data = majority_class_data[selected_indices]
+#     num_to_select = len(minority_class_data)
+#     selected_indices = np.random.choice(len(majority_class_data), num_to_select, replace=False)
+#     downsampled_majority_class_data = majority_class_data[selected_indices]
     
-    downsampled_data = np.concatenate((minority_class_data, downsampled_majority_class_data), axis=0)
-    downsampled_labels = np.array([minority_class] * len(minority_class_data) + [majority_class] * num_to_select)
+#     downsampled_data = np.concatenate((minority_class_data, downsampled_majority_class_data), axis=0)
+#     downsampled_labels = np.array([minority_class] * len(minority_class_data) + [majority_class] * num_to_select)
     
-    indices = np.arange(len(downsampled_labels))
-    np.random.shuffle(indices)
+#     indices = np.arange(len(downsampled_labels))
+#     np.random.shuffle(indices)
     
-    print("Class Distribution after downsampling:", np.bincount(downsampled_labels))
+#     print("Class Distribution after downsampling:", np.bincount(downsampled_labels))
     
-    return downsampled_data[indices], downsampled_labels[indices]
+#     return downsampled_data[indices], downsampled_labels[indices]
 ############################################################################
-
+#  Oversampling to handle data imbalance 
+def oversample_data(data, labels):
+    unique, counts = np.unique(labels, return_counts=True)
+    max_count = np.max(counts)
+    
+    oversampled_data = []
+    oversampled_labels = []
+    
+    for label in unique:
+        class_data = data[labels == label]
+        num_to_add = max_count - len(class_data)
+        
+        if num_to_add == 0:
+            oversampled_data.append(class_data)
+            oversampled_labels.extend([label] * len(class_data))
+        else:
+            oversampled_class_data = np.tile(class_data, (num_to_add // len(class_data) + 1, 1, 1))
+            oversampled_class_data = oversampled_class_data[:num_to_add]
+            
+            oversampled_data.append(np.concatenate((class_data, oversampled_class_data), axis=0))
+            oversampled_labels.extend([label] * (len(class_data) + num_to_add))
+    
+    oversampled_data = np.concatenate(oversampled_data, axis=0)
+    oversampled_labels = np.array(oversampled_labels)
+    
+    indices = np.arange(len(oversampled_labels))
+    np.random.shuffle(indices)
+    # Debugging output to verify class distribution
+    print("Class distribution after oversampling:", np.bincount(oversampled_labels))
+    
+    return oversampled_data[indices], oversampled_labels[indices]
+############################################################################
 def load_folds_data(np_data_path, n_folds):
     # Loads all .npz files from the specified directory
     files = sorted(glob(os.path.join(np_data_path, "*.npz")))
@@ -88,7 +119,7 @@ def load_folds_data(np_data_path, n_folds):
         
         for fold_id in range(n_folds):
             # Perform downsampling on training data
-            train_data, train_labels = downsample_data(train_data, train_labels)
+            train_data, train_labels = oversample_data(train_data, train_labels)
             # Debugging output after downsampling
             print(f"Fold {fold_id} downsampled train_data shape: {train_data.shape}")           
             # Save data to new file paths
@@ -114,8 +145,8 @@ def load_folds_data(np_data_path, n_folds):
 def calc_class_weight(labels_count):
     # Already applied downsampling
     num_classes = len(labels_count)
-    # class_weight = [1.0] * num_classes
-    class_weight = [1.5, 1.0]
+    class_weight = [1.0] * num_classes
+    # class_weight = [1.5, 1.0]
     # print(f"Number of Classes: {num_classes}")
     print(f"Class weighting: {class_weight}")
 
