@@ -20,75 +20,66 @@ from mne.io import concatenate_raws, read_raw_edf
 import sleep_study as ss
 
 # Label values
-# OD = 0,
-# OSA = 1
-# Hypopnea = 2
-# CSA = 3
-# OSH = 4
-# MA = 5
-APNEA = 0  # Binary training 
-OTHER = 1
-# W = 0
-# N1 = 1
-# N2 = 2
-# N3 = 3
-# REM = 4
-# UNKNOWN = 5
+
+# APNEA = 0  # Binary training 
+# OTHER = 1
+W = 0
+N1 = 1
+N2 = 2
+N3 = 3
+REM = 4
+UNKNOWN = 5
 
 stage_dict = {
-    # "Oxygen Desaturation": APNEA,
-    # "Obstructive Apnea": APNEA,
-    # "Hypopnea": APNEA,
-    # "Central Apnea": APNEA,
-    # "Obstructive Hypopnea": APNEA,
-    # "Mixed Apnea":  APNEA,
-    "APNEA": APNEA,
-    "OTHER": OTHER
-    # "W": W,
-    # "N1": N1,
-    # "N2": N2,
-    # "N3": N3,
-    # "REM": REM,
-    # "UNKNOWN": UNKNOWN
+    # "APNEA": APNEA,
+    # "OTHER": OTHER
+    "W": W,
+    "N1": N1,
+    "N2": N2,
+    "N3": N3,
+    "REM": REM,
+    "UNKNOWN": UNKNOWN
     
 }
 
 class_dict = {
-    # 0: "Oxygen Desaturation",
-    # 1: "Obstructive Apnea",
-    # 2: "Hypopnea",
-    # 3: "Central Apnea",
-    # 4: "Obstructive Hypopnea",
-    # 5: "Mixed Apnea",
-    0: "APNEA",
-    1: "OTHER"
+    0: "W",
+    1: "N1",
+    2: "N2",
+    3: "N3",
+    4: "REM",
+    5: "UNKNOWN"
+    # 0: "APNEA",
+    # 1: "OTHER"
 }
 
 ann2label = {
-    "Oxygen Desaturation": 0,
-    "Obstructive Apnea": 0,
-    "Hypopnea": 0,
-    "Central Apnea": 0,
-    "Obstructive Hypopnea": 0,
-    'Mixed Apnea':  0, 
-    'Sleep stage R': 1,
-    'Sleep stage W': 1,
-    'Sleep stage N1': 1,
-    'Sleep stage N2': 1,
-    'Sleep stage N3': 1,
-    'EEG Arousal': 1,
-    'Oximeter Event': 1,
-    'Move': 1,
-    'Limb Movement': 1,
-    'SHORT_EVENT': 1
-    # "Sleep stage W": 0,
-    # "Sleep stage 1": 1,
-    # "Sleep stage 2": 2,
-    # "Sleep stage 3": 3,
-    # "Sleep stage 4": 3,
-    # "Sleep stage R": 4,
-    # "Sleep stage ?": 5,
-    # "Movement time": 5
+    # "Oxygen Desaturation": 0,
+    # "Obstructive Apnea": 0,
+    # "Hypopnea": 0,
+    # "Central Apnea": 0,
+    # "Obstructive Hypopnea": 0,
+    # 'Mixed Apnea':  0, 
+    # 'Sleep stage R': 1,
+    # 'Sleep stage W': 1,
+    # 'Sleep stage N1': 1,
+    # 'Sleep stage N2': 1,
+    # 'Sleep stage N3': 1,
+    # 'EEG Arousal': 1,
+    # 'Oximeter Event': 1,
+    # 'Move': 1,
+    # 'Limb Movement': 1,
+    # 'SHORT_EVENT': 1
+    
+    "Sleep stage W": 0,
+    "Sleep stage 1": 1,
+    "Sleep stage 2": 2,
+    "Sleep stage 3": 3,
+    "Sleep stage 4": 3,
+    "Sleep stage R": 4,
+    "Sleep stage ?": 5,
+    "Movement time": 5,
+    "SHORT_EVENT": 5
 }
 
 EPOCH_SEC_SIZE = 30
@@ -98,9 +89,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/srv/scratch/speechdata/sleep_data/NCH",
                         help="File path to the PSG and annotation files.")
-    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/apnea_binary/C4-M1",
+    parser.add_argument("--output_dir", type=str, default="/srv/scratch/z5298768/AttnSleep_data/prepare_datasets/raw_eeg_stages/C3-M2",
                         help="Directory where to save numpy files outputs.")
-    parser.add_argument("--select_ch", type=str, default="EEG C4-M1",
+    parser.add_argument("--select_ch", type=str, default="EEG C3-M2",
                         help="The selected channel")
     # Initialise 10% of the dataset
     parser.add_argument("--percentage", type=int, default=10, 

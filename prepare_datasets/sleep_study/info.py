@@ -5,27 +5,27 @@ import pandas as pd
 import sleep_study as ss
 
 EVENT_DICT = {
-        # 'Sleep stage W' : 0,
-        # 'Sleep stage N1': 1,
-        # 'Sleep stage N2': 2,
-        # 'Sleep stage N3': 3,
-        # 'Sleep stage R' : 4
-        'Oxygen Desaturation' : 0,  # Try binary training 
-        'Obstructive Apnea': 0,
-        'Hypopnea': 0,
-        'Central Apnea': 0,
-        'Obstructive Hypopnea' : 0,
-        'Mixed Apnea':  0, 
-        'Sleep stage R': 1,
-        'Sleep stage W': 1,
+        'Sleep stage W' : 0,
         'Sleep stage N1': 1,
-        'Sleep stage N2': 1,
-        'Sleep stage N3': 1,
-        'EEG Arousal': 1,
-        'Oximeter Event': 1,
-        'Move': 1,
-        'Limb Movement': 1,
-        'SHORT_EVENT': 1 # Events less than 10s
+        'Sleep stage N2': 2,
+        'Sleep stage N3': 3,
+        'Sleep stage R' : 4
+        # 'Oxygen Desaturation' : 0,  # Try binary training 
+        # 'Obstructive Apnea': 0,
+        # 'Hypopnea': 0,
+        # 'Central Apnea': 0,
+        # 'Obstructive Hypopnea' : 0,
+        # 'Mixed Apnea':  0, 
+        # 'Sleep stage R': 1,
+        # 'Sleep stage W': 1,
+        # 'Sleep stage N1': 1,
+        # 'Sleep stage N2': 1,
+        # 'Sleep stage N3': 1,
+        # 'EEG Arousal': 1,
+        # 'Oximeter Event': 1,
+        # 'Move': 1,
+        # 'Limb Movement': 1,
+        # 'SHORT_EVENT': 1 # Events less than 10s
         
         }
 
