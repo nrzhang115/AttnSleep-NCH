@@ -310,7 +310,7 @@ class AttnSleep(nn.Module):
         d_ff = 120   # dimension of feed forward
         h = 5  # number of attention heads
         dropout = 0.5 # Original: 0.1
-        num_classes = 2 # binary training -> 2
+        num_classes = 5 # binary training -> 2
         afr_reduced_cnn_size = 30
 
         self.mrcnn = MRCNN(afr_reduced_cnn_size) # use MRCNN_SHHS for SHHS dataset
