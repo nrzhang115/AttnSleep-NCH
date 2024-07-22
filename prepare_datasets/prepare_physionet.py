@@ -78,8 +78,7 @@ ann2label = {
     "Sleep stage 4": 3,
     "Sleep stage R": 4,
     "Sleep stage ?": 5,
-    "Movement time": 5,
-    "SHORT_EVENT": 5
+    "Movement time": 5
 }
 
 EPOCH_SEC_SIZE = 30
