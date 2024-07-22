@@ -27,7 +27,7 @@
   ],
   "trainer": {
     "epochs": 100,
-    "save_dir": "saved/",
+    "save_dir": "saved/3-4/",
     "save_period": 30,
     "verbosity": 2,
     "monitor": "min val_loss"
